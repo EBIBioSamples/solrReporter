@@ -8,6 +8,8 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 import uk.ac.ebi.solrReporter.sources.DBSourceImp;
 
+import java.util.List;
+
 @Component
 public class AppStarter implements ApplicationRunner {
     private Logger log = LoggerFactory.getLogger(this.getClass());
@@ -19,9 +21,11 @@ public class AppStarter implements ApplicationRunner {
     public void run(ApplicationArguments args) throws Exception {
         log.info("Entering application...");
 
-        dbSourceImp.getSamplesAccessions();
+        List<String> list1 = dbSourceImp.getSamplesAccessions();
+        log.info("Found " + list1.size() + " samples!!!");
 
-        dbSourceImp.getGroupsAccessions();
+        List<String> list2 = dbSourceImp.getGroupsAccessions();
+        log.info("Found " + list2.size() + " groups!!!");
 
     }
 }
