@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -27,11 +28,10 @@ public class DBSourceImp implements DBSource {
                 "INNER JOIN MSI msi ON msi.ID = ms.MSI_ID " +
                 "WHERE msi.RELEASE_DATE < SYSDATE";
 
-        List list = jdbcTemplate.queryForList(samplesAccQuery);
-        System.out.println(list.get(0));
-        System.out.println(list.get(1));
+        List<String> accessions = new ArrayList<>();
+        jdbcTemplate.queryForList(samplesAccQuery).forEach(row -> accessions.add((String) row.get("ACC")));
 
-        return null;
+        return accessions;
     }
 
     @Override
@@ -41,11 +41,10 @@ public class DBSourceImp implements DBSource {
                 "INNER JOIN MSI msi ON mg.MSI_ID = msi.ID " +
                 "WHERE msi.RELEASE_DATE < SYSDATE";
 
-        List list = jdbcTemplate.queryForList(groupsAccQuery);
-        System.out.println(list.get(0));
-        System.out.println(list.get(1));
+        List<String> accessions = new ArrayList<>();
+        jdbcTemplate.queryForList(groupsAccQuery).forEach(row -> accessions.add((String) row.get("ACC")));
 
-        return null;
+        return accessions;
     }
 
 }
