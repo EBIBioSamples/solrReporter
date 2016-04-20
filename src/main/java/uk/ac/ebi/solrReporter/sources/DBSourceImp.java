@@ -39,7 +39,7 @@ public class DBSourceImp implements DBSource {
         String groupsAccQuery = "SELECT gp.ACC FROM BIO_SMP_GRP gp " +
                 "INNER JOIN MSI_SAMPLE_GROUP mg ON gp.ID = mg.GROUP_ID " +
                 "INNER JOIN MSI msi ON mg.MSI_ID = msi.ID " +
-                "WHERE msi.RELEASE_DATE < SYSDATE+1";
+                "WHERE msi.RELEASE_DATE < SYSDATE";
 
         List list = jdbcTemplate.queryForList(groupsAccQuery);
         System.out.println(list.get(0));
