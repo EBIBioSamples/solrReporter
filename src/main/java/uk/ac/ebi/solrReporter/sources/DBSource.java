@@ -23,6 +23,8 @@ public class DBSource implements Source {
 
     @Override
     public List<String> getSamplesAccessions() {
+        log.info("Getting public samples accessions from DB.");
+
         String samplesAccQuery = "SELECT b.ACC FROM BIO_PRODUCT b " +
                 "INNER JOIN MSI_SAMPLE ms ON b.ID = ms.SAMPLE_ID " +
                 "INNER JOIN MSI msi ON msi.ID = ms.MSI_ID " +
@@ -31,11 +33,14 @@ public class DBSource implements Source {
         List<String> accessions = new ArrayList<>();
         jdbcTemplate.queryForList(samplesAccQuery).forEach(row -> accessions.add((String) row.get("ACC")));
 
+        log.info("Successfully fetched " + accessions.size() + " samples accessions from DB.");
         return accessions;
     }
 
     @Override
     public List<String> getGroupsAccessions() {
+        log.info("Getting public groups accessions from DB.");
+
         String groupsAccQuery = "SELECT gp.ACC FROM BIO_SMP_GRP gp " +
                 "INNER JOIN MSI_SAMPLE_GROUP mg ON gp.ID = mg.GROUP_ID " +
                 "INNER JOIN MSI msi ON mg.MSI_ID = msi.ID " +
@@ -44,6 +49,7 @@ public class DBSource implements Source {
         List<String> accessions = new ArrayList<>();
         jdbcTemplate.queryForList(groupsAccQuery).forEach(row -> accessions.add((String) row.get("ACC")));
 
+        log.info("Successfully fetched " + accessions.size() + " groups accessions from DB.");
         return accessions;
     }
 

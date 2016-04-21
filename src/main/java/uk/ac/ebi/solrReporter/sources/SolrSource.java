@@ -17,11 +17,21 @@ public class SolrSource implements Source {
 
     @Override
     public List<String> getSamplesAccessions() {
+        log.info("Getting samples accessions indexed to samples core.");
+
+        // TODO
+
+        log.info("Successfully fetched " + "" + " samples accessions from DB.");
         return null;
     }
 
     @Override
     public List<String> getGroupsAccessions() {
+        log.info("Getting groups accessions indexed to groups core.");
+
+        // TODO
+
+        log.info("Successfully fetched " + "" + " samples accessions from DB.");
         return null;
     }
 }
