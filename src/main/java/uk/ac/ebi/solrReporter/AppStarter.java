@@ -7,6 +7,7 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 import uk.ac.ebi.solrReporter.sources.DBSourceImp;
+import uk.ac.ebi.solrReporter.sources.SolrSource;
 
 import java.util.List;
 
@@ -16,6 +17,9 @@ public class AppStarter implements ApplicationRunner {
 
     @Autowired
     private DBSourceImp dbSourceImp;
+
+    @Autowired
+    private SolrSource solrSource;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
@@ -27,5 +31,8 @@ public class AppStarter implements ApplicationRunner {
         List<String> list2 = dbSourceImp.getGroupsAccessions();
         log.info("Found " + list2.size() + " groups!!!");
 
+        solrSource.getSamplesAccessions();
+
+        solrSource.getGroupsAccessions();
     }
 }

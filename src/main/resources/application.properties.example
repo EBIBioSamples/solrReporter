@@ -4,3 +4,6 @@ oracle.password=pass
 oracle.url=url
 
 spring.jpa.database-platform=org.hibernate.dialect.Oracle10gDialect
+
+# SOLR
+solr.host=http://localhost:8983/solr/
