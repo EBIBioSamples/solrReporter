@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class DBSourceImp implements Source {
+public class DBSource implements Source {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     private JdbcTemplate jdbcTemplate;

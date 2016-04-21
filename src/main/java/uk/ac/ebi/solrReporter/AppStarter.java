@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
-import uk.ac.ebi.solrReporter.sources.DBSourceImp;
+import uk.ac.ebi.solrReporter.sources.DBSource;
 import uk.ac.ebi.solrReporter.sources.SolrSource;
 
 import java.util.List;
@@ -16,7 +16,7 @@ public class AppStarter implements ApplicationRunner {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    private DBSourceImp dbSourceImp;
+    private DBSource dbSource;
 
     @Autowired
     private SolrSource solrSource;
@@ -25,10 +25,10 @@ public class AppStarter implements ApplicationRunner {
     public void run(ApplicationArguments args) throws Exception {
         log.info("Entering application...");
 
-        List<String> list1 = dbSourceImp.getSamplesAccessions();
+        List<String> list1 = dbSource.getSamplesAccessions();
         log.info("Found " + list1.size() + " samples!!!");
 
-        List<String> list2 = dbSourceImp.getGroupsAccessions();
+        List<String> list2 = dbSource.getGroupsAccessions();
         log.info("Found " + list2.size() + " groups!!!");
 
         solrSource.getSamplesAccessions();
