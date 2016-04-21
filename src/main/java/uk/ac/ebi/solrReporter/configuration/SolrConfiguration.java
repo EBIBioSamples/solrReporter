@@ -1,45 +1,28 @@
 package uk.ac.ebi.solrReporter.configuration;
 
 import com.sun.istack.internal.NotNull;
+import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.HashMap;
+import org.springframework.data.solr.repository.config.EnableSolrRepositories;
 
 @Configuration
 @ConfigurationProperties("solr")
+@EnableSolrRepositories(multicoreSupport = true)
 public class SolrConfiguration {
 
     @NotNull
-    private String samplesUrl;
+    private String host;
 
-    @NotNull
-    private String groupsUrl;
-
-    @NotNull
-    private String mergedUrl;
-
-    public void setSamplesUrl(String samplesUrl) {
-        this.samplesUrl = samplesUrl;
-    }
-
-    public void setGroupsUrl(String groupsUrl) {
-        this.groupsUrl = groupsUrl;
-    }
-
-    public void setMergedUrl(String mergedUrl) {
-        this.mergedUrl = mergedUrl;
+    public void setHost(String host) {
+        this.host = host;
     }
 
     @Bean
-    public HashMap<String, HttpSolrClient> solrInstances() {
-        HashMap<String, HttpSolrClient> map = new HashMap<>();
-        map.put("samples", new HttpSolrClient(samplesUrl));
-        map.put("groups", new HttpSolrClient(groupsUrl));
-        map.put("merged", new HttpSolrClient(mergedUrl));
-        return map;
+    public SolrClient getSolrClient() {
+        return new HttpSolrClient(host);
     }
 
 }
