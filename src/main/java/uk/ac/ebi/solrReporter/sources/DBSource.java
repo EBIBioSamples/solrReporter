@@ -28,7 +28,8 @@ public class DBSource implements Source {
         String samplesAccQuery = "SELECT b.ACC FROM BIO_PRODUCT b " +
                 "INNER JOIN MSI_SAMPLE ms ON b.ID = ms.SAMPLE_ID " +
                 "INNER JOIN MSI msi ON msi.ID = ms.MSI_ID " +
-                "WHERE msi.RELEASE_DATE < SYSDATE";
+                "WHERE msi.RELEASE_DATE < SYSDATE " +
+                "AND (b.PUBLIC_FLAG IS NULL OR b.PUBLIC_FLAG = 1)";
 
         List<String> accessions = new ArrayList<>();
         jdbcTemplate.queryForList(samplesAccQuery).forEach(row -> accessions.add((String) row.get("ACC")));
@@ -44,7 +45,8 @@ public class DBSource implements Source {
         String groupsAccQuery = "SELECT gp.ACC FROM BIO_SMP_GRP gp " +
                 "INNER JOIN MSI_SAMPLE_GROUP mg ON gp.ID = mg.GROUP_ID " +
                 "INNER JOIN MSI msi ON mg.MSI_ID = msi.ID " +
-                "WHERE msi.RELEASE_DATE < SYSDATE";
+                "WHERE msi.RELEASE_DATE < SYSDATE " +
+                "AND (gp.PUBLIC_FLAG IS NULL OR gp.PUBLIC_FLAG = 1)";
 
         List<String> accessions = new ArrayList<>();
         jdbcTemplate.queryForList(groupsAccQuery).forEach(row -> accessions.add((String) row.get("ACC")));
