@@ -6,8 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
-import uk.ac.ebi.solrReporter.sources.DBSource;
-import uk.ac.ebi.solrReporter.sources.SolrSource;
+import uk.ac.ebi.solrReporter.sources.SourceFactory;
 
 import java.util.List;
 
@@ -16,23 +15,20 @@ public class AppStarter implements ApplicationRunner {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    private DBSource dbSource;
-
-    @Autowired
-    private SolrSource solrSource;
+    private SourceFactory sourceFactory;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
         log.info("Entering application...");
 
-        List<String> list1 = dbSource.getSamplesAccessions();
+        List<String> list1 = sourceFactory.getDBSource().getSamplesAccessions();
         log.info("Found " + list1.size() + " samples!!!");
 
-        List<String> list2 = dbSource.getGroupsAccessions();
+        List<String> list2 = sourceFactory.getDBSource().getGroupsAccessions();
         log.info("Found " + list2.size() + " groups!!!");
 
-        solrSource.getSamplesAccessions();
+        sourceFactory.getSolrSource().getSamplesAccessions();
 
-        solrSource.getGroupsAccessions();
+        sourceFactory.getSolrSource().getGroupsAccessions();
     }
 }
