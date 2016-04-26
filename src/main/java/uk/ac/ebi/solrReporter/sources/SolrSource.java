@@ -1,44 +1,75 @@
 package uk.ac.ebi.solrReporter.sources;
 
-import org.apache.solr.client.solrj.SolrClient;
+import com.sun.istack.internal.NotNull;
+import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.impl.HttpSolrClient;
+import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.params.ModifiableSolrParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.solr.core.SolrTemplate;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
+@Configuration
+@ConfigurationProperties("solr")
 public class SolrSource implements Source {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
-    private SolrClient solrClient;
+    @NotNull
+    private String groups;
+    @NotNull
+    private String samples;
+    @NotNull
+    private String merged;
 
-    private SolrTemplate solrTemplate = null;
+    public void setGroups(String groups) {
+        this.groups = groups;
+    }
+
+    public void setSamples(String samples) {
+        this.samples = samples;
+    }
+
+    public void setMerged(String merged) {
+        this.merged = merged;
+    }
 
     @Override
     public List<String> getSamplesAccessions() {
         log.info("Getting samples accessions indexed to samples core.");
+        HttpSolrClient samplesClient = new HttpSolrClient(samples);
 
-        solrTemplate = new SolrTemplate(solrClient, "samples");
+        ModifiableSolrParams solrParams = new ModifiableSolrParams();
+        solrParams.set("q", "*:*");
+        //solrParams.set("wt", "csv");
+        solrParams.set("fl", "accession");
 
-        // TODO
+        QueryResponse response = null;
 
-        log.info("Successfully fetched " + "" + " accessions from solr " + solrTemplate.getSolrCore() + " core.");
+        try {
+            response = samplesClient.query(solrParams);
+        } catch (IOException | SolrServerException e) {
+            log.error("Error querying " + samplesClient.getBaseURL() , e);
+        }
+
+        System.out.println("Response: " + response);
+
         return null;
     }
 
     @Override
     public List<String> getGroupsAccessions() {
         log.info("Getting groups accessions indexed to groups core.");
+        HttpSolrClient groupsClient = new HttpSolrClient(groups);
 
-        solrTemplate = new SolrTemplate(solrClient, "groups");
 
         // TODO
 
-        log.info("Successfully fetched " + "" + " accessions from solr " + solrTemplate.getSolrCore() + " core.");
         return null;
     }
 }

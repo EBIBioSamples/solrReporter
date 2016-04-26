@@ -6,4 +6,6 @@ oracle.url=url
 spring.jpa.database-platform=org.hibernate.dialect.Oracle10gDialect
 
 # SOLR
-solr.host=http://localhost:8983/solr/
+solr.groups=http://localhost:8983/solr/groups
+solr.samples=http://localhost:8983/solr/samples
+solr.merged=http://localhost:8983/solr/merged
