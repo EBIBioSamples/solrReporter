@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import uk.ac.ebi.solrReporter.sources.SourceFactory;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
@@ -22,16 +23,16 @@ public class AppStarter implements ApplicationRunner {
     public void run(ApplicationArguments args) throws Exception {
         log.info("Entering application...");
 
-        List<String> list1 = sourceFactory.getDBSource().getSamplesAccessions();
+        Set<String> list1 = sourceFactory.getDBSource().getSamplesAccessions();
         log.info("Found " + list1.size() + " samples!!!");
 
-        List<String> list2 = sourceFactory.getDBSource().getGroupsAccessions();
+        Set<String> list2 = sourceFactory.getDBSource().getGroupsAccessions();
         log.info("Found " + list2.size() + " groups!!!");
 
-        List<String> samplesFromSolr = sourceFactory.getSolrSource().getSamplesAccessions();
+        Set<String> samplesFromSolr = sourceFactory.getSolrSource().getSamplesAccessions();
         log.info("Found " + samplesFromSolr.size() + " samples in the solr index.");
 
-        List<String> groupsFromSolr = sourceFactory.getSolrSource().getGroupsAccessions();
+        Set<String> groupsFromSolr = sourceFactory.getSolrSource().getGroupsAccessions();
         log.info("Found " + groupsFromSolr.size() + " groups in the solr index.");
     }
 

@@ -1,10 +1,10 @@
 package uk.ac.ebi.solrReporter.sources;
 
-import java.util.List;
+import java.util.Set;
 
 public interface Source {
 
-    List<String> getSamplesAccessions();
+    Set<String> getSamplesAccessions();
 
-    List<String> getGroupsAccessions();
+    Set<String> getGroupsAccessions();
 }

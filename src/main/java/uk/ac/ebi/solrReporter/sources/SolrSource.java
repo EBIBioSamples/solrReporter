@@ -13,7 +13,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static java.lang.Math.toIntExact;
 
@@ -43,7 +45,7 @@ public class SolrSource implements Source {
     }
 
     @Override
-    public List<String> getSamplesAccessions() {
+    public Set<String> getSamplesAccessions() {
         log.info("Getting samples accessions indexed to samples core.");
         HttpSolrClient samplesClient = new HttpSolrClient(samples);
 
@@ -52,19 +54,23 @@ public class SolrSource implements Source {
         solrParams.set("fl", "accession");
         solrParams.set("rows", 1);
 
-        QueryResponse response;
+        QueryResponse response = null;
         try {
             response = samplesClient.query(solrParams);
+            log.debug("First response: " + response);
         } catch (IOException | SolrServerException e) {
             log.error("Error querying " + samplesClient.getBaseURL() , e);
-            return new ArrayList<>();
         }
 
-        return doSecondQuery(response, solrParams, samplesClient);
+        if (response != null) {
+            return doSecondQuery(response, solrParams, samplesClient);
+        } else {
+            return new HashSet<>();
+        }
     }
 
     @Override
-    public List<String> getGroupsAccessions() {
+    public Set<String> getGroupsAccessions() {
         log.info("Getting groups accessions indexed to groups core.");
         HttpSolrClient groupsClient = new HttpSolrClient(groups);
 
@@ -73,21 +79,24 @@ public class SolrSource implements Source {
         solrParams.set("fl", "accession");
         solrParams.set("rows", 1);
 
-        QueryResponse response;
+        QueryResponse response = null;
         try {
             response = groupsClient.query(solrParams);
+            log.debug("First response: " + response);
         } catch (IOException | SolrServerException e) {
             log.error("Error querying " + groupsClient.getBaseURL() , e);
-            return new ArrayList<>();
         }
 
-        return doSecondQuery(response, solrParams, groupsClient);
+        if (response != null) {
+            return doSecondQuery(response, solrParams, groupsClient);
+        } else {
+            return new HashSet<>();
+        }
     }
 
-    private List<String> doSecondQuery(QueryResponse response, ModifiableSolrParams solrParams, HttpSolrClient solrClient) {
-        List<String> accessions = new ArrayList<>();
+    private Set<String> doSecondQuery(QueryResponse response, ModifiableSolrParams solrParams, HttpSolrClient solrClient) {
+        Set<String> accessions = new HashSet<>();
         if ((Integer)response.getHeader().get("status") == 0) {
-            log.debug("First response: " + response);
 
             solrParams.set("rows", toIntExact(response.getResults().getNumFound()));
             try {

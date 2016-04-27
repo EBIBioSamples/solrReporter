@@ -8,7 +8,9 @@ import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class DBSource implements Source {
@@ -22,7 +24,7 @@ public class DBSource implements Source {
     }
 
     @Override
-    public List<String> getSamplesAccessions() {
+    public Set<String> getSamplesAccessions() {
         log.info("Getting public samples accessions from DB.");
 
         String samplesAccQuery = "SELECT b.ACC FROM BIO_PRODUCT b " +
@@ -31,7 +33,7 @@ public class DBSource implements Source {
                 "WHERE msi.RELEASE_DATE < SYSDATE " +
                 "AND (b.PUBLIC_FLAG IS NULL OR b.PUBLIC_FLAG = 1)";
 
-        List<String> accessions = new ArrayList<>();
+        Set<String> accessions = new HashSet<>();
         jdbcTemplate.queryForList(samplesAccQuery).forEach(row -> accessions.add((String) row.get("ACC")));
 
         log.info("Successfully fetched " + accessions.size() + " samples accessions from DB.");
@@ -39,7 +41,7 @@ public class DBSource implements Source {
     }
 
     @Override
-    public List<String> getGroupsAccessions() {
+    public Set<String> getGroupsAccessions() {
         log.info("Getting public groups accessions from DB.");
 
         String groupsAccQuery = "SELECT gp.ACC FROM BIO_SMP_GRP gp " +
@@ -48,7 +50,7 @@ public class DBSource implements Source {
                 "WHERE msi.RELEASE_DATE < SYSDATE " +
                 "AND (gp.PUBLIC_FLAG IS NULL OR gp.PUBLIC_FLAG = 1)";
 
-        List<String> accessions = new ArrayList<>();
+        Set<String> accessions = new HashSet<>();
         jdbcTemplate.queryForList(groupsAccQuery).forEach(row -> accessions.add((String) row.get("ACC")));
 
         log.info("Successfully fetched " + accessions.size() + " groups accessions from DB.");
