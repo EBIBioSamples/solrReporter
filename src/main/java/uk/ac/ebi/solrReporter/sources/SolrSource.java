@@ -95,15 +95,16 @@ public class SolrSource implements Source {
     }
 
     public Set<String> getSamplesFromMergedCore() {
+        log.info("Getting sample accessions indexed to merged core.");
         return getFromMergedCore("sample");
     }
 
     public Set<String> getGroupsFromMergedCore() {
+        log.info("Getting group accessions indexed to merged core.");
         return getFromMergedCore("group");
     }
 
     private Set<String> getFromMergedCore(String content_type) {
-        log.info("Getting accessions indexed to merged core.");
         HttpSolrClient mergedClient = new HttpSolrClient(merged);
 
         ModifiableSolrParams solrParams = new ModifiableSolrParams();
@@ -141,6 +142,7 @@ public class SolrSource implements Source {
 
             // Add accessions to result list
             response.getResults().forEach(row -> accessions.add((String) row.getFieldValue("accession")));
+            log.info("Successfully fetched " + accessions.size()+ " from solr.");
 
         } else {
             log.error("Error querying Samples core got status: " + response.getHeader().get("status"));
