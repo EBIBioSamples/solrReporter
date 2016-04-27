@@ -23,17 +23,30 @@ public class AppStarter implements ApplicationRunner {
     public void run(ApplicationArguments args) throws Exception {
         log.info("Entering application...");
 
-        Set<String> list1 = sourceFactory.getDBSource().getSamplesAccessions();
-        log.info("Found " + list1.size() + " samples!!!");
+        // From DB - samples
+        Set<String> samplesFromDB = sourceFactory.getDBSource().getSamplesAccessions();
+        log.info("Found " + samplesFromDB.size() + " samples in th DB.");
 
-        Set<String> list2 = sourceFactory.getDBSource().getGroupsAccessions();
-        log.info("Found " + list2.size() + " groups!!!");
+        // From DB - groups
+        Set<String> groupsFromDB = sourceFactory.getDBSource().getGroupsAccessions();
+        log.info("Found " + groupsFromDB.size() + " groups in th DB.");
 
+        // From Solr - samples
         Set<String> samplesFromSolr = sourceFactory.getSolrSource().getSamplesAccessions();
         log.info("Found " + samplesFromSolr.size() + " samples in the solr index.");
 
+        // From Solr - groups
         Set<String> groupsFromSolr = sourceFactory.getSolrSource().getGroupsAccessions();
         log.info("Found " + groupsFromSolr.size() + " groups in the solr index.");
+
+        // From Solr - merged (samples)
+        Set<String> samplesFromMergedSolr =  sourceFactory.getSolrSource().getSamplesFromMergedCore();
+        log.info("Found " + samplesFromMergedSolr.size() + " samples in the merged solr index.");
+
+        // From Solr - merged (groups)
+        Set<String> groupsFromMergedCore =  sourceFactory.getSolrSource().getGroupsFromMergedCore();
+        log.info("Found " + groupsFromMergedCore.size() + " groups in the merged solr index.");
+
     }
 
     /**
@@ -41,8 +54,8 @@ public class AppStarter implements ApplicationRunner {
      * @param dbAcc accessions from DB
      * @param solrAcc accessions from solr
      */
-    public void getMissingInIndex(List<String> dbAcc, List<String> solrAcc) {
-        List<String> missinInIndex = dbAcc.stream().filter(db -> !solrAcc.contains(db)).collect(Collectors.toList());
+    public void getMissingInIndex(Set<String> dbAcc, Set<String> solrAcc) {
+        Set<String> missinInIndex = dbAcc.stream().filter(db -> !solrAcc.contains(db)).collect(Collectors.toSet());
         System.out.println(missinInIndex.size() + " accessions missing in the index.");
         System.out.println(missinInIndex.toString());
     }
@@ -52,8 +65,8 @@ public class AppStarter implements ApplicationRunner {
      * @param dbAcc accessions from DB
      * @param solrAcc accessions from solr
      */
-    public void getPresentInIndex(List<String> dbAcc, List<String> solrAcc) {
-        List<String> presentInIndex = solrAcc.stream().filter(solr -> !dbAcc.contains(solr)).collect(Collectors.toList());
+    public void getPresentInIndex(Set<String> dbAcc, Set<String> solrAcc) {
+        Set<String> presentInIndex = solrAcc.stream().filter(solr -> !dbAcc.contains(solr)).collect(Collectors.toSet());
         System.out.println(presentInIndex.size() + " private accessions found in the index.");
         System.out.println(presentInIndex.toString());
     }

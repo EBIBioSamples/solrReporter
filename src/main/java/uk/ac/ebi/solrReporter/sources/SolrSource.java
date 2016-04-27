@@ -94,6 +94,39 @@ public class SolrSource implements Source {
         }
     }
 
+    public Set<String> getSamplesFromMergedCore() {
+        return getFromMergedCore("sample");
+    }
+
+    public Set<String> getGroupsFromMergedCore() {
+        return getFromMergedCore("group");
+    }
+
+    private Set<String> getFromMergedCore(String content_type) {
+        log.info("Getting accessions indexed to merged core.");
+        HttpSolrClient mergedClient = new HttpSolrClient(merged);
+
+        ModifiableSolrParams solrParams = new ModifiableSolrParams();
+        solrParams
+                .set("q", "content_type:" + content_type)
+                .set("fl", "accession")
+                .set("rows", 1);
+
+        QueryResponse response = null;
+        try {
+            response = mergedClient.query(solrParams);
+            log.debug("First response: " + response);
+        } catch (IOException | SolrServerException e) {
+            log.error("Error querying " + mergedClient.getBaseURL() , e);
+        }
+
+        if (response != null) {
+            return doSecondQuery(response, solrParams, mergedClient);
+        } else {
+            return new HashSet<>();
+        }
+    }
+
     private Set<String> doSecondQuery(QueryResponse response, ModifiableSolrParams solrParams, HttpSolrClient solrClient) {
         Set<String> accessions = new HashSet<>();
         if ((Integer)response.getHeader().get("status") == 0) {
