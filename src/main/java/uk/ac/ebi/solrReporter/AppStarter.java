@@ -8,10 +8,6 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 import uk.ac.ebi.solrReporter.sources.SourceFactory;
 
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 @Component
 public class AppStarter implements ApplicationRunner {
     private Logger log = LoggerFactory.getLogger(this.getClass());
@@ -21,16 +17,16 @@ public class AppStarter implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        log.info("Entering application...");
+        log.info("Starting Report");
 
-        Report report = new Report();
-        report.setSamplesDB(sourceFactory.getDBSource().getSamplesAccessions());
-        report.setGroupsDB(sourceFactory.getDBSource().getGroupsAccessions());
-        report.setSamplesSolr(sourceFactory.getSolrSource().getSamplesAccessions());
-        report.setGroupsSolr(sourceFactory.getSolrSource().getGroupsAccessions());
-        report.setSamplesSolrMerged(sourceFactory.getSolrSource().getSamplesFromMergedCore());
-        report.setGroupsSolrMerged(sourceFactory.getSolrSource().getGroupsFromMergedCore());
+        ReportData reportData = new ReportData();
+        reportData.setSamplesDB(sourceFactory.getDBSource().getSamplesAccessions());
+        reportData.setGroupsDB(sourceFactory.getDBSource().getGroupsAccessions());
+        reportData.setSamplesSolr(sourceFactory.getSolrSource().getSamplesAccessions());
+        reportData.setGroupsSolr(sourceFactory.getSolrSource().getGroupsAccessions());
+        reportData.setSamplesSolrMerged(sourceFactory.getSolrSource().getSamplesFromMergedCore());
+        reportData.setGroupsSolrMerged(sourceFactory.getSolrSource().getGroupsFromMergedCore());
 
-        System.out.println(report);
+        System.out.println(reportData);
     }
 }
