@@ -1,4 +1,4 @@
-package uk.ac.ebi.solrReporter;
+package uk.ac.ebi.solrReporter.report;
 
 import org.springframework.stereotype.Component;
 
