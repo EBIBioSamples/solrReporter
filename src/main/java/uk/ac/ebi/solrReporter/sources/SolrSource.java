@@ -12,7 +12,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+
+import static java.lang.Math.toIntExact;
 
 @Service
 @Configuration
@@ -46,20 +49,18 @@ public class SolrSource implements Source {
 
         ModifiableSolrParams solrParams = new ModifiableSolrParams();
         solrParams.set("q", "*:*");
-        //solrParams.set("wt", "csv");
         solrParams.set("fl", "accession");
+        solrParams.set("rows", 1);
 
-        QueryResponse response = null;
-
+        QueryResponse response;
         try {
             response = samplesClient.query(solrParams);
         } catch (IOException | SolrServerException e) {
             log.error("Error querying " + samplesClient.getBaseURL() , e);
+            return new ArrayList<>();
         }
 
-        System.out.println("Response: " + response);
-
-        return null;
+        return doSecondQuery(response, solrParams, samplesClient);
     }
 
     @Override
@@ -67,9 +68,43 @@ public class SolrSource implements Source {
         log.info("Getting groups accessions indexed to groups core.");
         HttpSolrClient groupsClient = new HttpSolrClient(groups);
 
+        ModifiableSolrParams solrParams = new ModifiableSolrParams();
+        solrParams.set("q", "*:*");
+        solrParams.set("fl", "accession");
+        solrParams.set("rows", 1);
 
-        // TODO
+        QueryResponse response;
+        try {
+            response = groupsClient.query(solrParams);
+        } catch (IOException | SolrServerException e) {
+            log.error("Error querying " + groupsClient.getBaseURL() , e);
+            return new ArrayList<>();
+        }
 
-        return null;
+        return doSecondQuery(response, solrParams, groupsClient);
+    }
+
+    private List<String> doSecondQuery(QueryResponse response, ModifiableSolrParams solrParams, HttpSolrClient solrClient) {
+        List<String> accessions = new ArrayList<>();
+        if ((Integer)response.getHeader().get("status") == 0) {
+            log.debug("First response: " + response);
+
+            solrParams.set("rows", toIntExact(response.getResults().getNumFound()));
+            try {
+                response = solrClient.query(solrParams);
+            } catch (IOException | SolrServerException e) {
+                log.error("Error querying " + solrClient.getBaseURL() , e);
+            }
+            log.debug("Second response head: " + response.getHeader());
+
+            // Add accessions to result list
+            response.getResults().forEach(row -> accessions.add((String) row.getFieldValue("accession")));
+
+        } else {
+            log.error("Error querying Samples core got status: " + response.getHeader().get("status"));
+            System.exit((Integer) response.getHeader().get("status"));
+        }
+
+        return accessions;
     }
 }

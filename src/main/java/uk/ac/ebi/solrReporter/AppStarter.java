@@ -28,9 +28,11 @@ public class AppStarter implements ApplicationRunner {
         List<String> list2 = sourceFactory.getDBSource().getGroupsAccessions();
         log.info("Found " + list2.size() + " groups!!!");
 
-        sourceFactory.getSolrSource().getSamplesAccessions();
+        List<String> samplesFromSolr = sourceFactory.getSolrSource().getSamplesAccessions();
+        log.info("Found " + samplesFromSolr.size() + " samples in the solr index.");
 
-        sourceFactory.getSolrSource().getGroupsAccessions();
+        List<String> groupsFromSolr = sourceFactory.getSolrSource().getGroupsAccessions();
+        log.info("Found " + groupsFromSolr.size() + " groups in the solr index.");
     }
 
     /**
