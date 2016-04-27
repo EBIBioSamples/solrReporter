@@ -112,15 +112,23 @@ public class ReportData {
     }
 
     /* Validations */
+    public void runValidations() {
+        getMissingInIndex(samplesDB, samplesSolr);
+        getMissingInIndex(groupsDB, groupsSolr);
+
+        getPresentInIndex(samplesDB, samplesSolr);
+        getPresentInIndex(groupsDB, groupsSolr);
+    }
+
     /**
      * Generates list of accessions missing in the solr index
      * @param dbAcc accessions from DB
      * @param solrAcc accessions from solr
      */
-    public void getMissingInIndex(Set<String> dbAcc, Set<String> solrAcc) {
-        Set<String> missinInIndex = dbAcc.stream().filter(db -> !solrAcc.contains(db)).collect(Collectors.toSet());
-        System.out.println(missinInIndex.size() + " accessions missing in the index.");
-        System.out.println(missinInIndex.toString());
+    private void getMissingInIndex(Set<String> dbAcc, Set<String> solrAcc) {
+        Set<String> missingInIndex = dbAcc.stream().filter(db -> !solrAcc.contains(db)).collect(Collectors.toSet());
+        System.out.println(missingInIndex.size() + " accessions missing in the index.");
+        //System.out.println(missingInIndex.toString());
     }
 
     /**
@@ -128,10 +136,10 @@ public class ReportData {
      * @param dbAcc accessions from DB
      * @param solrAcc accessions from solr
      */
-    public void getPresentInIndex(Set<String> dbAcc, Set<String> solrAcc) {
+    private void getPresentInIndex(Set<String> dbAcc, Set<String> solrAcc) {
         Set<String> presentInIndex = solrAcc.stream().filter(solr -> !dbAcc.contains(solr)).collect(Collectors.toSet());
         System.out.println(presentInIndex.size() + " private accessions found in the index.");
-        System.out.println(presentInIndex.toString());
+        //System.out.println(presentInIndex.toString());
     }
 
     @Override

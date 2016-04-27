@@ -29,5 +29,7 @@ public class AppStarter implements ApplicationRunner {
         reportData.setGroupsSolrMerged(sourceFactory.getSolrSource().getGroupsFromMergedCore());
 
         System.out.println(reportData);
+
+        reportData.runValidations();
     }
 }
