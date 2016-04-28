@@ -27,11 +27,18 @@ public class DBSource implements Source {
     public Set<String> getSamplesAccessions() {
         log.info("Getting public samples accessions from DB.");
 
-        String samplesAccQuery = "SELECT b.ACC FROM BIO_PRODUCT b " +
-                "INNER JOIN MSI_SAMPLE ms ON b.ID = ms.SAMPLE_ID " +
-                "INNER JOIN MSI msi ON msi.ID = ms.MSI_ID " +
-                "WHERE msi.RELEASE_DATE < SYSDATE " +
-                "AND (b.PUBLIC_FLAG IS NULL OR b.PUBLIC_FLAG = 1)";
+        String samplesAccQuery =
+                "WITH res AS " +
+                "( " +
+                "SELECT b.ACC, COUNT(msi.ACC) AMOUNT FROM BIO_PRODUCT b, MSI_SAMPLE ms, MSI msi " +
+                "WHERE b.ID = ms.SAMPLE_ID " +
+                "AND msi.ID = ms.MSI_ID " +
+                "AND msi.RELEASE_DATE < SYSDATE " +
+                "AND( b.PUBLIC_FLAG IS NULL OR b.PUBLIC_FLAG = 1) " +
+                "GROUP BY b.ACC" +
+                ") " +
+                "SELECT res.ACC FROM res " +
+                "WHERE res.AMOUNT = 1";
 
         Set<String> accessions = new HashSet<>();
         jdbcTemplate.queryForList(samplesAccQuery).forEach(row -> accessions.add((String) row.get("ACC")));
@@ -44,11 +51,18 @@ public class DBSource implements Source {
     public Set<String> getGroupsAccessions() {
         log.info("Getting public groups accessions from DB.");
 
-        String groupsAccQuery = "SELECT gp.ACC FROM BIO_SMP_GRP gp " +
-                "INNER JOIN MSI_SAMPLE_GROUP mg ON gp.ID = mg.GROUP_ID " +
-                "INNER JOIN MSI msi ON mg.MSI_ID = msi.ID " +
-                "WHERE msi.RELEASE_DATE < SYSDATE " +
-                "AND (gp.PUBLIC_FLAG IS NULL OR gp.PUBLIC_FLAG = 1)";
+        String groupsAccQuery =
+                "WITH res AS" +
+                "(" +
+                "SELECT gp.ACC, COUNT(msi.ACC) AMOUNT FROM BIO_SMP_GRP gp, MSI_SAMPLE_GROUP mg, MSI msi " +
+                "WHERE gp.ID = mg.GROUP_ID " +
+                "AND mg.MSI_ID = msi.ID " +
+                "AND msi.RELEASE_DATE < SYSDATE " +
+                "AND (gp.PUBLIC_FLAG IS NULL OR gp.PUBLIC_FLAG = 1) " +
+                "GROUP BY gp.ACC " +
+                ") " +
+                "SELECT res.ACC FROM res " +
+                "WHERE res.AMOUNT = 1";
 
         Set<String> accessions = new HashSet<>();
         jdbcTemplate.queryForList(groupsAccQuery).forEach(row -> accessions.add((String) row.get("ACC")));
