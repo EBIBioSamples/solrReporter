@@ -36,4 +36,5 @@ fabric.properties
 
 application.properties
 hibernate.properties
+report_*
 

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
+import uk.ac.ebi.solrReporter.report.Report;
 import uk.ac.ebi.solrReporter.report.ReportData;
 import uk.ac.ebi.solrReporter.sources.SourceFactory;
 
@@ -16,20 +17,23 @@ public class AppStarter implements ApplicationRunner {
     @Autowired
     private SourceFactory sourceFactory;
 
+    @Autowired
+    private Report report;
+
     @Override
     public void run(ApplicationArguments args) throws Exception {
         log.info("Starting Report");
 
-        ReportData reportData = new ReportData();
-        reportData.setSamplesDB(sourceFactory.getDBSource().getSamplesAccessions());
-        reportData.setGroupsDB(sourceFactory.getDBSource().getGroupsAccessions());
-        reportData.setSamplesSolr(sourceFactory.getSolrSource().getSamplesAccessions());
-        reportData.setGroupsSolr(sourceFactory.getSolrSource().getGroupsAccessions());
-        reportData.setSamplesSolrMerged(sourceFactory.getSolrSource().getSamplesFromMergedCore());
-        reportData.setGroupsSolrMerged(sourceFactory.getSolrSource().getGroupsFromMergedCore());
+        ReportData data = new ReportData();
+        data.setSamplesDB(sourceFactory.getDBSource().getSamplesAccessions());
+        data.setGroupsDB(sourceFactory.getDBSource().getGroupsAccessions());
+        data.setSamplesSolr(sourceFactory.getSolrSource().getSamplesAccessions());
+        data.setGroupsSolr(sourceFactory.getSolrSource().getGroupsAccessions());
+        data.setSamplesSolrMerged(sourceFactory.getSolrSource().getSamplesFromMergedCore());
+        data.setGroupsSolrMerged(sourceFactory.getSolrSource().getGroupsFromMergedCore());
 
-        System.out.println(reportData);
+        log.info(data.toString());
 
-        reportData.runValidations();
+        report.generateReport(data);
     }
 }

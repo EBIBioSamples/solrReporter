@@ -1,12 +1,14 @@
 package uk.ac.ebi.solrReporter.report;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Component
 public class ReportData {
+    private Logger log = LoggerFactory.getLogger(this.getClass());
 
     private int samplesDBCount;
 
@@ -109,37 +111,6 @@ public class ReportData {
     public void setGroupsSolrMerged(Set<String> groupsSolrMerged) {
         this.groupsSolrMerged = groupsSolrMerged;
         this.groupsSolrMergedCount = this.groupsSolrMerged.size();
-    }
-
-    /* Validations */
-    public void runValidations() {
-        getMissingInIndex(samplesDB, samplesSolr);
-        getMissingInIndex(groupsDB, groupsSolr);
-
-        getPresentInIndex(samplesDB, samplesSolr);
-        getPresentInIndex(groupsDB, groupsSolr);
-    }
-
-    /**
-     * Generates list of accessions missing in the solr index
-     * @param dbAcc accessions from DB
-     * @param solrAcc accessions from solr
-     */
-    private void getMissingInIndex(Set<String> dbAcc, Set<String> solrAcc) {
-        Set<String> missingInIndex = dbAcc.stream().filter(db -> !solrAcc.contains(db)).collect(Collectors.toSet());
-        System.out.println(missingInIndex.size() + " accessions missing in the index.");
-        //System.out.println(missingInIndex.toString());
-    }
-
-    /**
-     * Generates list of accessions not supposed to be in the solr index
-     * @param dbAcc accessions from DB
-     * @param solrAcc accessions from solr
-     */
-    private void getPresentInIndex(Set<String> dbAcc, Set<String> solrAcc) {
-        Set<String> presentInIndex = solrAcc.stream().filter(solr -> !dbAcc.contains(solr)).collect(Collectors.toSet());
-        System.out.println(presentInIndex.size() + " private accessions found in the index.");
-        //System.out.println(presentInIndex.toString());
     }
 
     @Override
