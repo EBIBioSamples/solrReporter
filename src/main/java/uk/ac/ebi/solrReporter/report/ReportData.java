@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.text.DecimalFormat;
 import java.util.Set;
 
 @Component
@@ -115,13 +116,14 @@ public class ReportData {
 
     @Override
     public String toString() {
+        DecimalFormat myFormat = new DecimalFormat("###,###.###");
         return "Report{" +
-                "samplesDB=" + getSamplesDBCount() +
-                ", groupsDB=" + getGroupsDBCount() +
-                ", samplesSolr=" + getSamplesSolrCount() +
-                ", groupsSolr=" + getGroupsSolrCount() +
-                ", samplesSolrMerged=" + getSamplesSolrMergedCount() +
-                ", groupsSolrMerged=" + getGroupsSolrMergedCount() +
+                "samplesDB=" + myFormat.format(getSamplesDBCount()) +
+                ", groupsDB=" + myFormat.format(getGroupsDBCount()) +
+                ", samplesSolr=" + myFormat.format(getSamplesSolrCount()) +
+                ", groupsSolr=" + myFormat.format(getGroupsSolrCount()) +
+                ", samplesSolrMerged=" + myFormat.format(getSamplesSolrMergedCount()) +
+                ", groupsSolrMerged=" + myFormat.format(getGroupsSolrMergedCount()) +
                 '}';
     }
 }

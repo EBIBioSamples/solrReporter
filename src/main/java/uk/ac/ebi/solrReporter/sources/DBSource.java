@@ -33,7 +33,7 @@ public class DBSource implements Source {
                 "SELECT b.ACC, COUNT(msi.ACC) AMOUNT FROM BIO_PRODUCT b, MSI_SAMPLE ms, MSI msi " +
                 "WHERE b.ID = ms.SAMPLE_ID " +
                 "AND msi.ID = ms.MSI_ID " +
-                "AND msi.RELEASE_DATE < SYSDATE " +
+                "AND msi.RELEASE_DATE < SYSDATE + 1 " +
                 "AND( b.PUBLIC_FLAG IS NULL OR b.PUBLIC_FLAG = 1) " +
                 "GROUP BY b.ACC" +
                 ") " +
@@ -57,7 +57,7 @@ public class DBSource implements Source {
                 "SELECT gp.ACC, COUNT(msi.ACC) AMOUNT FROM BIO_SMP_GRP gp, MSI_SAMPLE_GROUP mg, MSI msi " +
                 "WHERE gp.ID = mg.GROUP_ID " +
                 "AND mg.MSI_ID = msi.ID " +
-                "AND msi.RELEASE_DATE < SYSDATE " +
+                "AND msi.RELEASE_DATE < SYSDATE + 1 " +
                 "AND (gp.PUBLIC_FLAG IS NULL OR gp.PUBLIC_FLAG = 1) " +
                 "GROUP BY gp.ACC " +
                 ") " +
