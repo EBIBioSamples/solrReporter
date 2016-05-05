@@ -23,7 +23,8 @@ public class Report {
     public boolean generateReport(ReportData data) {
         Calendar cal = Calendar.getInstance();
 
-        try (PrintWriter writer = new PrintWriter("report_" + dateFormat.format(cal.getTime()) + ".txt")) {
+        try (PrintWriter writer = new PrintWriter("report_" + dateFormat.format(cal.getTime()) + ".txt");
+                PrintWriter detail_writer = new PrintWriter("report_detail_" + dateFormat.format(cal.getTime()) + ".txt")) {
 
             // GROUPS
             writer.println("Public groups found in DB:  " + myFormat.format(data.getGroupsDBCount()));
@@ -54,31 +55,46 @@ public class Report {
             writer.println();
 
             // DETAIL
-            writer.println("Missing groups in groups core:");
-            getMissingInIndex(data.getGroupsDB(), data.getGroupsSolr()).forEach(writer::println);
-            writer.println("Private groups in groups core:");
-            getPresentInIndex(data.getGroupsDB(), data.getGroupsSolr()).forEach(writer::println);
-            writer.println();
+            // DB vs SOLR
+            detail_writer.println("Missing groups in groups core:");
+            getMissingInIndex(data.getGroupsDB(), data.getGroupsSolr()).forEach(detail_writer::println);
+            detail_writer.println("Private groups in groups core:");
+            getPresentInIndex(data.getGroupsDB(), data.getGroupsSolr()).forEach(detail_writer::println);
+            detail_writer.println();
 
-            writer.println("Missing samples in samples core:");
-            getMissingInIndex(data.getSamplesDB(), data.getSamplesSolr()).forEach(writer::println);
-            writer.println("Private samples in samples core:");
-            getPresentInIndex(data.getSamplesDB(), data.getSamplesSolr()).forEach(writer::println);
-            writer.println();
+            detail_writer.println("Missing samples in samples core:");
+            getMissingInIndex(data.getSamplesDB(), data.getSamplesSolr()).forEach(detail_writer::println);
+            detail_writer.println("Private samples in samples core:");
+            getPresentInIndex(data.getSamplesDB(), data.getSamplesSolr()).forEach(detail_writer::println);
+            detail_writer.println();
 
-            writer.println("Missing groups in merged core:");
-            getMissingInIndex(data.getGroupsDB(), data.getGroupsSolrMerged()).forEach(writer::println);
-            writer.println("Private groups in merged core:");
-            getPresentInIndex(data.getGroupsDB(), data.getGroupsSolrMerged()).forEach(writer::println);
-            writer.println("Missing samples in merged core:");
-            getMissingInIndex(data.getSamplesDB(), data.getSamplesSolrMerged()).forEach(writer::println);
-            writer.println("Private samples in merged core:");
-            getPresentInIndex(data.getSamplesDB(), data.getSamplesSolrMerged()).forEach(writer::println);
+            detail_writer.println("Missing groups in merged core:");
+            getMissingInIndex(data.getGroupsDB(), data.getGroupsSolrMerged()).forEach(detail_writer::println);
+            detail_writer.println("Private groups in merged core:");
+            getPresentInIndex(data.getGroupsDB(), data.getGroupsSolrMerged()).forEach(detail_writer::println);
+            detail_writer.println("Missing samples in merged core:");
+            getMissingInIndex(data.getSamplesDB(), data.getSamplesSolrMerged()).forEach(detail_writer::println);
+            detail_writer.println("Private samples in merged core:");
+            getPresentInIndex(data.getSamplesDB(), data.getSamplesSolrMerged()).forEach(detail_writer::println);
+
+            // Solr vs Solr
+            detail_writer.println("Comparing cores - groups vs merged");
+            detail_writer.println("Missing in merged when comparing to groups");
+            getMissingInIndex(data.getGroupsSolr(), data.getGroupsSolrMerged()).forEach(detail_writer::println);
+            detail_writer.println("Missing in groups when comparing to merged");
+            getMissingInIndex(data.getGroupsSolrMerged(), data.getGroupsSolr()).forEach(detail_writer::println);
+
+            detail_writer.println("Comparing cores - samples vs merged");
+            detail_writer.println("Missing in merged when comparing to samples");
+            getMissingInIndex(data.getSamplesSolr(), data.getSamplesSolrMerged()).forEach(detail_writer::println);
+            detail_writer.println("Missing in samples when comparing to merged");
+            getMissingInIndex(data.getSamplesSolrMerged(), data.getSamplesSolr()).forEach(detail_writer::println);
 
             writer.flush();
+            detail_writer.flush();
 
         } catch (FileNotFoundException e) {
-            log.error("Error creating report txt file", e);
+            log.error("Error while creating report", e);
             return false;
         }
 
@@ -86,27 +102,27 @@ public class Report {
     }
 
     /**
-     * Generates list of accessions missing in the solr index
-     * @param dbAcc accessions from DB
-     * @param solrAcc accessions from solr
+     * Generates list of accessions missing in the second list comparing with the first
+     * @param first list of accessions
+     * @param second list of accessions
      */
-    public Set<String> getMissingInIndex(Set<String> dbAcc, Set<String> solrAcc) {
+    public Set<String> getMissingInIndex(Set<String> first, Set<String> second) {
         Set<String> missingInIndex = new HashSet<>();
-        if(dbAcc != null && solrAcc != null) {
-            missingInIndex = dbAcc.parallelStream().filter(db -> !solrAcc.contains(db)).collect(Collectors.toSet());
+        if(first != null && second != null) {
+            missingInIndex = first.parallelStream().filter(db -> !second.contains(db)).collect(Collectors.toSet());
         }
         return missingInIndex;
     }
 
     /**
-     * Generates list of accessions not supposed to be in the solr index
-     * @param dbAcc accessions from DB
-     * @param solrAcc accessions from solr
+     * Generates list of accessions present in the second list but not in the first
+     * @param first list of accessions
+     * @param second list of accessions
      */
-    public Set<String> getPresentInIndex(Set<String> dbAcc, Set<String> solrAcc) {
+    public Set<String> getPresentInIndex(Set<String> first, Set<String> second) {
         Set<String> presentInIndex = new HashSet<>();
-        if(dbAcc != null && solrAcc != null) {
-            presentInIndex = solrAcc.parallelStream().filter(solr -> !dbAcc.contains(solr)).collect(Collectors.toSet());
+        if(first != null && second != null) {
+            presentInIndex = second.parallelStream().filter(solr -> !first.contains(solr)).collect(Collectors.toSet());
         }
         return presentInIndex;
     }
