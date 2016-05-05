@@ -7,3 +7,13 @@ oracle.url=url
 solr.groups=http://localhost:8983/solr/groups
 solr.samples=http://localhost:8983/solr/samples
 solr.merged=http://localhost:8983/solr/merged
+
+# MAIL
+mail.protocol=smtp
+mail.host=localhost
+mail.port=25
+mail.smtpAuth=false
+mail.smtpStarttlsEnable=false
+mail.from=me@localhost
+mail.username=
+mail.password=
