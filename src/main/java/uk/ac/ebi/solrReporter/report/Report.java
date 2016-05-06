@@ -26,7 +26,8 @@ public class Report {
         try (PrintWriter writer = new PrintWriter("report_" + dateFormat.format(cal.getTime()) + ".txt");
                 PrintWriter detail_writer = new PrintWriter("report_detail_" + dateFormat.format(cal.getTime()) + ".txt")) {
 
-            // GROUPS
+            // DB vs SOLR
+            // Groups
             writer.println("Public groups found in DB:  " + myFormat.format(data.getGroupsDBCount()));
             writer.println("Groups found in Solr groups core:  " + myFormat.format(data.getGroupsSolrCount()));
             writer.println("Groups found in Solr merged core: " + myFormat.format(data.getGroupsSolrMergedCount()));
@@ -40,7 +41,7 @@ public class Report {
             }
             writer.println();
 
-            // SAMPLES
+            // Samples
             writer.println("Public samples found in DB: " + myFormat.format(data.getSamplesDBCount()));
             writer.println("Samples found in Solr samples core: " + myFormat.format(data.getSamplesSolrCount()));
             writer.println("Samples found in Solr merged core: " + myFormat.format(data.getSamplesSolrMergedCount()));
@@ -55,40 +56,70 @@ public class Report {
             writer.println();
 
             // DETAIL
-            // DB vs SOLR
             detail_writer.println("Missing groups in groups core:");
             getMissingInIndex(data.getGroupsDB(), data.getGroupsSolr()).forEach(detail_writer::println);
+            detail_writer.println();
+
             detail_writer.println("Private groups in groups core:");
             getPresentInIndex(data.getGroupsDB(), data.getGroupsSolr()).forEach(detail_writer::println);
             detail_writer.println();
 
             detail_writer.println("Missing samples in samples core:");
             getMissingInIndex(data.getSamplesDB(), data.getSamplesSolr()).forEach(detail_writer::println);
+            detail_writer.println();
+
             detail_writer.println("Private samples in samples core:");
             getPresentInIndex(data.getSamplesDB(), data.getSamplesSolr()).forEach(detail_writer::println);
             detail_writer.println();
 
             detail_writer.println("Missing groups in merged core:");
             getMissingInIndex(data.getGroupsDB(), data.getGroupsSolrMerged()).forEach(detail_writer::println);
+            detail_writer.println();
+
             detail_writer.println("Private groups in merged core:");
             getPresentInIndex(data.getGroupsDB(), data.getGroupsSolrMerged()).forEach(detail_writer::println);
+            detail_writer.println();
+
             detail_writer.println("Missing samples in merged core:");
             getMissingInIndex(data.getSamplesDB(), data.getSamplesSolrMerged()).forEach(detail_writer::println);
+            detail_writer.println();
+
             detail_writer.println("Private samples in merged core:");
             getPresentInIndex(data.getSamplesDB(), data.getSamplesSolrMerged()).forEach(detail_writer::println);
+            detail_writer.println();
 
-            // Solr vs Solr
-            detail_writer.println("Comparing cores - groups vs merged");
-            detail_writer.println("Missing in merged when comparing to groups");
-            getMissingInIndex(data.getGroupsSolr(), data.getGroupsSolrMerged()).forEach(detail_writer::println);
-            detail_writer.println("Missing in groups when comparing to merged");
-            getMissingInIndex(data.getGroupsSolrMerged(), data.getGroupsSolr()).forEach(detail_writer::println);
+            // SOLR VS SOLR
+            Set<String> groupsMissingMerged = getMissingInIndex(data.getGroupsSolr(), data.getGroupsSolrMerged());
+            if (groupsMissingMerged != null && !groupsMissingMerged.isEmpty())
+                writer.println("Missing groups in solr/merged when comparing to solr/groups: " + myFormat.format(Math.abs(groupsMissingMerged.size())));
 
-            detail_writer.println("Comparing cores - samples vs merged");
-            detail_writer.println("Missing in merged when comparing to samples");
-            getMissingInIndex(data.getSamplesSolr(), data.getSamplesSolrMerged()).forEach(detail_writer::println);
-            detail_writer.println("Missing in samples when comparing to merged");
-            getMissingInIndex(data.getSamplesSolrMerged(), data.getSamplesSolr()).forEach(detail_writer::println);
+            Set<String> samplesMissingMerged = getMissingInIndex(data.getSamplesSolr(), data.getSamplesSolrMerged());
+            if (samplesMissingMerged != null && !samplesMissingMerged.isEmpty())
+                writer.println("Missing samples in solr/merged when comparing to solr/samples: " + myFormat.format(Math.abs(samplesMissingMerged.size())));
+            writer.println();
+
+            Set<String> groupsPresentMerged = getPresentInIndex(data.getGroupsSolr(), data.getGroupsSolrMerged());
+            if (groupsPresentMerged != null && !groupsPresentMerged.isEmpty())
+                writer.println("Present groups in solr/merged when comparing to solr/groups: " + myFormat.format(Math.abs(groupsPresentMerged.size())));
+
+            Set<String> samplesPresentMerged = getPresentInIndex(data.getSamplesSolr(), data.getSamplesSolrMerged());
+            if (samplesPresentMerged != null && !samplesPresentMerged.isEmpty())
+                writer.println("Present samples in solr/merged when comparing to solr/samples: " + myFormat.format(Math.abs(samplesPresentMerged.size())));
+            writer.println();
+
+            // DETAIL
+            detail_writer.println("Missing groups in solr/merged when comparing to solr/groups");
+            groupsMissingMerged.forEach(detail_writer::println);
+
+            detail_writer.println("Missing samples in solr/merged when comparing to solr/samples");
+            samplesMissingMerged.forEach(detail_writer::println);
+
+            detail_writer.println("Present groups in solr/merged when comparing to solr/groups");
+            groupsPresentMerged.forEach(detail_writer::println);
+            detail_writer.println();
+
+            detail_writer.println("Present samples in solr/merged when comparing to solr/samples");
+            samplesPresentMerged.forEach(detail_writer::println);
 
             writer.flush();
             detail_writer.flush();
