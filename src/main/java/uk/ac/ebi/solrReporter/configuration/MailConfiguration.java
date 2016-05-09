@@ -1,6 +1,5 @@
 package uk.ac.ebi.solrReporter.configuration;
 
-import com.sun.istack.internal.NotNull;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,21 +12,13 @@ import java.util.Properties;
 @ConfigurationProperties("mail")
 public class MailConfiguration {
 
-    @NotNull
     private String protocol;
-    @NotNull
     private String host;
-    @NotNull
     private int port;
-    @NotNull
     private boolean smtpAuth;
-    @NotNull
     private boolean smtpStarttlsEnable;
-    @NotNull
     private String from;
-    @NotNull
     private String username;
-    @NotNull
     private String password;
 
     public void setProtocol(String protocol) {

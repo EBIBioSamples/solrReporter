@@ -1,6 +1,6 @@
 package uk.ac.ebi.solrReporter.configuration;
 
-import com.sun.istack.internal.NotNull;
+
 import oracle.jdbc.pool.OracleDataSource;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -13,13 +13,10 @@ import java.sql.SQLException;
 @ConfigurationProperties("oracle")
 public class OracleConfiguration {
 
-    @NotNull
     private String username;
 
-    @NotNull
     private String password;
 
-    @NotNull
     private String url;
 
     public void setUsername(String username) {
