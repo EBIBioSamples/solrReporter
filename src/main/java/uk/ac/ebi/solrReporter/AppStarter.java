@@ -8,7 +8,13 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 import uk.ac.ebi.solrReporter.report.Report;
 import uk.ac.ebi.solrReporter.report.ReportData;
+import uk.ac.ebi.solrReporter.report.XMLReport;
+import uk.ac.ebi.solrReporter.report.XMLReportData;
 import uk.ac.ebi.solrReporter.sources.SourceFactory;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 @Component
 public class AppStarter implements ApplicationRunner {
@@ -31,6 +37,16 @@ public class AppStarter implements ApplicationRunner {
         data.setGroupsSolr(sourceFactory.getSolrSource().getGroupsAccessions());
         data.setSamplesSolrMerged(sourceFactory.getSolrSource().getSamplesFromMergedCore());
         data.setGroupsSolrMerged(sourceFactory.getSolrSource().getGroupsFromMergedCore());
+
+        // XML part
+        XMLReportData xmlData = new XMLReportData();
+        Set<String> queryStrings = new HashSet<>();
+
+        xmlData.setGroupAccessions(sourceFactory.getSolrSource().getGroupsAccessions());
+        xmlData.setSampleAccessions(sourceFactory.getSolrSource().getSamplesAccessions());
+
+        queryStrings.addAll(Arrays.asList("EBiSC","HipSci","Plant","FAANG"));
+        xmlData.setQueryStrings(queryStrings);
 
         log.info(data.toString());
 

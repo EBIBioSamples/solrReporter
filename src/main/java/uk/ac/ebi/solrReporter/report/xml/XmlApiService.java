@@ -11,23 +11,34 @@ import java.net.URLConnection;
 /**
  * Created by lucacherubin on 2016/05/09.
  */
-public interface XmlApiService {
+public class XmlApiService {
 
-    Document getGroup(String accession);
+    public static Document getGroup(String accession, ApiType api) throws Exception {
+        String url = String.format("%s/group/%s", api.url(), accession);
+        return buildDocumentFromUrl(url);
+    }
 
-    Document getSample(String accession);
+    public static Document getSample(String accession, ApiType api) throws Exception {
+        String url = String.format("%s/sample/%s", api.url(), accession);
+        return buildDocumentFromUrl(url);
+    }
 
-    Document getSampleQuery(String query);
+    public static Document getSampleQuery(String query, ApiType api) throws Exception {
+        String url = String.format("%s/sample/query=%s", api.url(), query);
+        return buildDocumentFromUrl(url);
+    }
 
-    Document getGroupQuery(String query);
+    public static Document getGroupQuery(String query, ApiType api) throws Exception {
+        String url = String.format("%s/group/query=%s", api.url(), query);
+        return buildDocumentFromUrl(url);
+    }
 
-    Document getSamplesInGroupQuery(String groupAccession, String query);
+    public static Document getSamplesInGroupQuery(String groupAccession, String query, ApiType api) throws Exception {
+        String url = String.format("%s/groupsamples/%s/query=%s", api.url(), groupAccession, query);
+        return buildDocumentFromUrl(url);
+    }
 
-
-
-
-
-    default Document buildDocumentFromUrl(String url) throws Exception {
+    public static Document buildDocumentFromUrl(String url) throws Exception {
         URL urlObj = new URL(url);
         URLConnection uc = urlObj.openConnection();
         HttpURLConnection connection = (HttpURLConnection) uc;
