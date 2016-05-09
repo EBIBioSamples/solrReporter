@@ -26,12 +26,8 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
-/**
- * Created by lucacherubin on 2016/05/09.
- */
 @Component
 public class XMLReport {
 
@@ -167,14 +163,6 @@ public class XMLReport {
                 .whenElementIsNamed("Publication").thenUse(new PublicationNodeMatcher())
                 .whenElementIsNamed("Person").thenUse(new PersonNodeMatcher()).build();
 
-        return new DefaultNodeMatcher(selector,ElementSelectors.byNameAndAllAttributes);
-
+        return new DefaultNodeMatcher(selector, ElementSelectors.byNameAndAllAttributes);
     }
-
-
-
-
-
-
-
 }
