@@ -1,6 +1,5 @@
 package uk.ac.ebi.solrReporter.sources;
 
-import com.sun.istack.internal.NotNull;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.client.solrj.response.QueryResponse;
@@ -12,9 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static java.lang.Math.toIntExact;
@@ -25,11 +22,8 @@ import static java.lang.Math.toIntExact;
 public class SolrSource implements Source {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @NotNull
     private String groups;
-    @NotNull
     private String samples;
-    @NotNull
     private String merged;
 
     public void setGroups(String groups) {
