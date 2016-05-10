@@ -77,6 +77,12 @@
 			<artifactId>solr-solrj</artifactId>
 			<version>5.5.0</version>
 		</dependency>
+
+		<dependency>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-jar-plugin</artifactId>
+			<version>2.6</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -84,6 +90,16 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.6</version>
+				<configuration>
+					<excludes>
+						<exclude>**/solrIndexer.properties</exclude>
+					</excludes>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
