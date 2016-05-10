@@ -3,6 +3,7 @@ package uk.ac.ebi.solrReporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
@@ -12,9 +13,18 @@ import uk.ac.ebi.solrReporter.report.XMLReport;
 import uk.ac.ebi.solrReporter.report.XMLReportData;
 import uk.ac.ebi.solrReporter.sources.SourceFactory;
 
+<<<<<<< 118aad2dd5cdd56d3e92cad2c8cf62718ad5d4d6
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+=======
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 @Component
 public class AppStarter implements ApplicationRunner {
@@ -29,23 +39,36 @@ public class AppStarter implements ApplicationRunner {
     @Autowired
     private XMLReport xmlReport;
 
+    private ExecutorService threadPool = null;
+    private List<Future<?>> futures = new ArrayList<>();
+
+    @Value("${threadPoolCount}")
+    private int threadPoolCount;
+
     @Override
     public void run(ApplicationArguments args) throws Exception {
         log.info("Starting Report");
 
+        threadPool = Executors.newFixedThreadPool(threadPoolCount);
         ReportData data = new ReportData();
-        data.setSamplesDB(sourceFactory.getDBSource().getSamplesAccessions());
-        data.setGroupsDB(sourceFactory.getDBSource().getGroupsAccessions());
-//        data.setSamplesSolr(sourceFactory.getSolrSource().getSamplesAccessions());
-//        data.setGroupsSolr(sourceFactory.getSolrSource().getGroupsAccessions());
-//        data.setSamplesSolrMerged(sourceFactory.getSolrSource().getSamplesFromMergedCore());
-//        data.setGroupsSolrMerged(sourceFactory.getSolrSource().getGroupsFromMergedCore());
 
-        // XML part
+        try {
+            futures.add(threadPool.submit(() -> data.setSamplesDB(sourceFactory.getDBSource().getSamplesAccessions())));
+            futures.add(threadPool.submit(() -> data.setGroupsDB(sourceFactory.getDBSource().getGroupsAccessions())));
+            futures.add(threadPool.submit(() -> data.setGroupsSolr(sourceFactory.getSolrSource().getGroupsAccessions())));
+            futures.add(threadPool.submit(() -> data.setGroupsSolrMerged(sourceFactory.getSolrSource().getGroupsFromMergedCore())));
 
+            data.setSamplesSolr(sourceFactory.getSolrSource().getSamplesAccessions());
+            data.setSamplesSolrMerged(sourceFactory.getSolrSource().getSamplesFromMergedCore());
 
-//        queryStrings.addAll(Arrays.asList("EBiSC","HipSci","Plant","FAANG"));
-//        xmlData.setQueryStrings(queryStrings);
+            for (int i = 0; i < futures.size(); i++) {
+                futures.get(i).get();
+            }
+
+        } catch (InterruptedException | ExecutionException e) {
+            log.error("Error collecting report data.", e);
+            System.exit(1);
+        }
 
 //        log.info(data.toString());
         log.info(data.toString());
