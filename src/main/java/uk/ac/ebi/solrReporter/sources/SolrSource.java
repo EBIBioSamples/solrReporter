@@ -4,6 +4,9 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.params.ModifiableSolrParams;
+import org.jdom2.Document;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -11,6 +14,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -145,4 +149,67 @@ public class SolrSource implements Source {
 
         return accessions;
     }
+
+    public Document getSampleXML(String accession) {
+        log.info("Getting samples XML from merged core.");
+        HttpSolrClient samplesClient = new HttpSolrClient(samples);
+
+        ModifiableSolrParams solrParams = new ModifiableSolrParams();
+        solrParams.set("q", "*:*");
+        solrParams.add("fq", "sample_acc: " + accession);
+        solrParams.set("fl", "xmlAPI");
+        solrParams.set("rows", 1);
+
+        QueryResponse response = null;
+        try {
+            response = samplesClient.query(solrParams);
+            log.debug("First response: " + response);
+        } catch (IOException | SolrServerException e) {
+            log.error("Error querying " + samplesClient.getBaseURL() , e);
+        }
+
+        if (response != null) {
+            SAXBuilder builder = new SAXBuilder();
+            String xmlApi = (String) response.getResults().get(0).getFieldValue("xmlAPI");
+            try {
+                return builder.build(new StringReader(xmlApi));
+            } catch (JDOMException | IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return new Document();
+    }
+
+    public Document getGroupXML(String accession) {
+        log.info("Getting groups XML from merged core.");
+        HttpSolrClient groupsClient = new HttpSolrClient(groups);
+
+        ModifiableSolrParams solrParams = new ModifiableSolrParams();
+        solrParams.set("q", "*:*");
+        solrParams.add("fq", "group_acc: " + accession);
+        solrParams.set("fl", "xmlAPI");
+        solrParams.set("rows", 1);
+
+        QueryResponse response = null;
+        try {
+            response = groupsClient.query(solrParams);
+            log.debug("First response: " + response);
+        } catch (IOException | SolrServerException e) {
+            log.error("Error querying " + groupsClient.getBaseURL() , e);
+        }
+
+        if (response != null) {
+            SAXBuilder builder = new SAXBuilder();
+            String xmlApi = (String) response.getResults().get(0).getFieldValue("xmlAPI");
+            try {
+                return builder.build(new StringReader(xmlApi));
+            } catch (JDOMException | IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return new Document();
+    }
+
 }

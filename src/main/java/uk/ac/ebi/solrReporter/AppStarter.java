@@ -26,6 +26,9 @@ public class AppStarter implements ApplicationRunner {
     @Autowired
     private Report report;
 
+    @Autowired
+    private XMLReport xmlReport;
+
     @Override
     public void run(ApplicationArguments args) throws Exception {
         log.info("Starting Report");
@@ -33,23 +36,21 @@ public class AppStarter implements ApplicationRunner {
         ReportData data = new ReportData();
         data.setSamplesDB(sourceFactory.getDBSource().getSamplesAccessions());
         data.setGroupsDB(sourceFactory.getDBSource().getGroupsAccessions());
-        data.setSamplesSolr(sourceFactory.getSolrSource().getSamplesAccessions());
-        data.setGroupsSolr(sourceFactory.getSolrSource().getGroupsAccessions());
-        data.setSamplesSolrMerged(sourceFactory.getSolrSource().getSamplesFromMergedCore());
-        data.setGroupsSolrMerged(sourceFactory.getSolrSource().getGroupsFromMergedCore());
+//        data.setSamplesSolr(sourceFactory.getSolrSource().getSamplesAccessions());
+//        data.setGroupsSolr(sourceFactory.getSolrSource().getGroupsAccessions());
+//        data.setSamplesSolrMerged(sourceFactory.getSolrSource().getSamplesFromMergedCore());
+//        data.setGroupsSolrMerged(sourceFactory.getSolrSource().getGroupsFromMergedCore());
 
         // XML part
-        XMLReportData xmlData = new XMLReportData();
-        Set<String> queryStrings = new HashSet<>();
 
-        xmlData.setGroupAccessions(sourceFactory.getSolrSource().getGroupsAccessions());
-        xmlData.setSampleAccessions(sourceFactory.getSolrSource().getSamplesAccessions());
 
-        queryStrings.addAll(Arrays.asList("EBiSC","HipSci","Plant","FAANG"));
-        xmlData.setQueryStrings(queryStrings);
+//        queryStrings.addAll(Arrays.asList("EBiSC","HipSci","Plant","FAANG"));
+//        xmlData.setQueryStrings(queryStrings);
 
+//        log.info(data.toString());
         log.info(data.toString());
 
-        report.generateReport(data);
+//        report.generateReport(data);
+        xmlReport.generateReport(data);
     }
 }

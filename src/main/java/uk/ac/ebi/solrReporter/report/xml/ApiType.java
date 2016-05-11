@@ -5,8 +5,8 @@ package uk.ac.ebi.solrReporter.report.xml;
  */
 public enum ApiType {
 
-    LEGACY("https://www.ebi.ac.uk/biosamples"),
-    NEW("");
+    LEGACY("https://www.ebi.ac.uk/biosamples/xml"),
+    NEW("https://www.ebi.ac.uk/biosamples/xml");
 
     private String baseUrl;
 
