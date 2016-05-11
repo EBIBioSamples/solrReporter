@@ -1,3 +1,6 @@
+# Thread Config
+threadPoolCount=4
+
 # ORACLE
 oracle.username=user
 oracle.password=pass
@@ -8,7 +11,7 @@ solr.groups=http://localhost:8983/solr/groups
 solr.samples=http://localhost:8983/solr/samples
 solr.merged=http://localhost:8983/solr/merged
 
-# MAIL
+# MAIL - not in use yet
 mail.protocol=smtp
 mail.host=localhost
 mail.port=25
