@@ -14,10 +14,7 @@ import uk.ac.ebi.solrReporter.sources.SourceFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 @Component
 public class AppStarter implements ApplicationRunner {
@@ -54,6 +51,9 @@ public class AppStarter implements ApplicationRunner {
             for (int i = 0; i < futures.size(); i++) {
                 futures.get(i).get();
             }
+
+            threadPool.shutdown();
+            threadPool.awaitTermination(1000, TimeUnit.MILLISECONDS);
 
         } catch (InterruptedException | ExecutionException e) {
             log.error("Error collecting report data.", e);
