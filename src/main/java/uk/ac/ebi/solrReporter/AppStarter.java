@@ -62,6 +62,12 @@ public class AppStarter implements ApplicationRunner {
 
         log.info(data.toString());
 
-        report.generateReport(data);
+        Boolean reportOK = report.generateReport(data);
+
+        if (reportOK) {
+            log.info("Report generated successfully!");
+        } else {
+            log.error("Failed to generate report!");
+        }
     }
 }
