@@ -37,4 +37,4 @@ fabric.properties
 application.properties
 hibernate.properties
 report_*
-
+xml_*.txt
