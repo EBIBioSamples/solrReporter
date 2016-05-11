@@ -2,7 +2,7 @@
 threadPoolCount=4
 
 # File destination
-#filePath=user/home/
+filePath=user/home/
 
 # ORACLE
 oracle.username=user
