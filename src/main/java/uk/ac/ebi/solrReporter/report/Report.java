@@ -2,6 +2,7 @@ package uk.ac.ebi.solrReporter.report;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
@@ -17,14 +18,21 @@ import java.util.stream.Collectors;
 public class Report {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
+    @Value("${filePath}")
+    private String path;
+
     private DecimalFormat myFormat = new DecimalFormat("###,###.###");
     DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
 
     public boolean generateReport(ReportData data) {
         Calendar cal = Calendar.getInstance();
 
-        try (PrintWriter writer = new PrintWriter("report_" + dateFormat.format(cal.getTime()) + ".txt");
-                PrintWriter detail_writer = new PrintWriter("report_detail_" + dateFormat.format(cal.getTime()) + ".txt")) {
+        File file = new File(path + "report_" + dateFormat.format(cal.getTime()) + ".txt");
+        File file_detail = new File(path + "report_detail_" + dateFormat.format(cal.getTime()) + ".txt");
+
+        try {
+            PrintWriter writer = new PrintWriter(file);
+            PrintWriter detail_writer = new PrintWriter(file_detail);
 
             // DB vs SOLR
             // Groups
@@ -123,6 +131,9 @@ public class Report {
 
             writer.flush();
             detail_writer.flush();
+
+            writer.close();
+            detail_writer.close();
 
         } catch (FileNotFoundException e) {
             log.error("Error while creating report", e);

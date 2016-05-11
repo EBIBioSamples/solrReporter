@@ -10,17 +10,10 @@ import org.springframework.stereotype.Component;
 import uk.ac.ebi.solrReporter.report.Report;
 import uk.ac.ebi.solrReporter.report.ReportData;
 import uk.ac.ebi.solrReporter.report.XMLReport;
-import uk.ac.ebi.solrReporter.report.XMLReportData;
 import uk.ac.ebi.solrReporter.sources.SourceFactory;
 
-<<<<<<< 118aad2dd5cdd56d3e92cad2c8cf62718ad5d4d6
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-=======
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.*;
 
 @Component
@@ -74,6 +67,13 @@ public class AppStarter implements ApplicationRunner {
         log.info(data.toString());
 
 //        report.generateReport(data);
-        xmlReport.generateReport(data);
+        Boolean xmlReportOK = xmlReport.generateReport(data);
+        Boolean reportOK = report.generateReport(data);
+
+        if (reportOK) {
+            log.info("Report generated successfully!");
+        } else {
+            log.error("Failed to generate report!");
+        }
     }
 }

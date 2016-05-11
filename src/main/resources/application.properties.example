@@ -1,6 +1,9 @@
 # Thread Config
 threadPoolCount=4
 
+# File destination
+#filePath=user/home/
+
 # ORACLE
 oracle.username=user
 oracle.password=pass
