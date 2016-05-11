@@ -66,9 +66,9 @@ public class AppStarter implements ApplicationRunner {
 //        log.info(data.toString());
         log.info(data.toString());
 
-//        report.generateReport(data);
-        Boolean xmlReportOK = xmlReport.generateReport(data);
+        Boolean xmlReportOk = xmlReport.generateReport(data);
         Boolean reportOK = report.generateReport(data);
+
 
         if (reportOK) {
             log.info("Report generated successfully!");
