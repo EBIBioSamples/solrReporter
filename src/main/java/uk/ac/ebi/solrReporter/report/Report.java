@@ -21,7 +21,7 @@ public class Report {
     @Value("${threshold:100}")
     private int threshold;
 
-    @Value("${filePath}")
+    @Value("${filePath:./}")
     private String path;
 
     private DecimalFormat myFormat = new DecimalFormat("###,###.###");
