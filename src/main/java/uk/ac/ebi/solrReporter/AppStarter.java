@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.stereotype.Component;
 import uk.ac.ebi.solrReporter.report.Report;
 import uk.ac.ebi.solrReporter.report.ReportData;
@@ -17,7 +18,7 @@ import java.util.Set;
 import java.util.concurrent.*;
 
 @Component
-public class AppStarter implements ApplicationRunner {
+public class AppStarter implements ApplicationRunner, ExitCodeGenerator {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
@@ -31,6 +32,8 @@ public class AppStarter implements ApplicationRunner {
 
     @Value("${threadPoolCount:4}")
     private int threadPoolCount;
+    
+    private int exitCode = 0;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
@@ -62,7 +65,7 @@ public class AppStarter implements ApplicationRunner {
 
         } catch (InterruptedException | ExecutionException e) {
             log.error("Error collecting report data.", e);
-            System.exit(1);
+            exitCode = 1;
         }
 
         log.info(data.toString());
@@ -73,7 +76,12 @@ public class AppStarter implements ApplicationRunner {
             log.info("Report generated with no errors.");
         } else {
             log.error("There are errors in the report.");
-            System.exit(1);
+            exitCode = 1;
         }
     }
+
+	@Override
+	public int getExitCode() {
+		return exitCode;
+	}
 }
