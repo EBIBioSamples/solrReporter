@@ -39,6 +39,11 @@ public class AppStarter implements ApplicationRunner {
         threadPool = Executors.newFixedThreadPool(threadPoolCount);
         ReportData data = new ReportData();
 
+        data.setDBSource(sourceFactory.getDBSource().getSourceUrl());
+        data.setSolrSource("[" + sourceFactory.getSolrSource().getGroups() + ", " +
+                sourceFactory.getSolrSource().getSamples() + ", " +
+                sourceFactory.getSolrSource().getMerged() + "]");
+
         try {
             futures.add(threadPool.submit(() -> data.setSamplesDB(sourceFactory.getDBSource().getSamplesAccessions())));
             futures.add(threadPool.submit(() -> data.setGroupsDB(sourceFactory.getDBSource().getGroupsAccessions())));

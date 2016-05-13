@@ -36,6 +36,10 @@ public class Report {
 
             // DB vs SOLR
             // Groups
+            writer.println("DB Source: " + data.getDBSource());
+            writer.println("Solr Source: " + data.getSolrSource());
+            writer.println();
+
             writer.println("Public groups found in DB:  " + myFormat.format(data.getGroupsDBCount()));
             writer.println("Groups found in Solr groups core:  " + myFormat.format(data.getGroupsSolrCount()));
             writer.println("Groups found in Solr merged core: " + myFormat.format(data.getGroupsSolrMergedCount()));

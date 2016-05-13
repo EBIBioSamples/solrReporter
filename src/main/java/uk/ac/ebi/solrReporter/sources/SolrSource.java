@@ -38,6 +38,18 @@ public class SolrSource implements Source {
         this.merged = merged;
     }
 
+    public String getGroups() {
+        return groups;
+    }
+
+    public String getSamples() {
+        return samples;
+    }
+
+    public String getMerged() {
+        return merged;
+    }
+
     @Override
     public Set<String> getSamplesAccessions() {
         log.info("Getting samples accessions indexed to samples core.");
