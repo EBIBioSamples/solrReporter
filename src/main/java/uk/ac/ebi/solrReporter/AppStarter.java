@@ -29,7 +29,7 @@ public class AppStarter implements ApplicationRunner {
     private ExecutorService threadPool = null;
     private List<Future<?>> futures = new ArrayList<>();
 
-    @Value("${threadPoolCount}")
+    @Value("${threadPoolCount:4}")
     private int threadPoolCount;
 
     @Override

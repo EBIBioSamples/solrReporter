@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 public class Report {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @Value("${threshold}")
+    @Value("${threshold:100}")
     private int threshold;
 
     @Value("${filePath}")
