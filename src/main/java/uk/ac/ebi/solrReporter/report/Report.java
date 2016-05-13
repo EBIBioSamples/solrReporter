@@ -80,70 +80,102 @@ public class Report {
             writer.println();
 
             // DETAIL
+            Set<String> set;
+
             detail_writer.println("Missing groups in groups core:");
-            getMissingInIndex(data.getGroupsDB(), data.getGroupsSolr()).forEach(detail_writer::println);
+            set = getMissingInIndex(data.getGroupsDB(), data.getGroupsSolr());
+            set.forEach(detail_writer::println);
+            if (set.size() > threshold) reportOK = false;
             detail_writer.println();
 
             detail_writer.println("Private groups in groups core:");
-            getPresentInIndex(data.getGroupsDB(), data.getGroupsSolr()).forEach(detail_writer::println);
+            set = getPresentInIndex(data.getGroupsDB(), data.getGroupsSolr());
+            set.forEach(detail_writer::println);
+            if (set.size() > threshold) reportOK = false;
             detail_writer.println();
 
             detail_writer.println("Missing samples in samples core:");
-            getMissingInIndex(data.getSamplesDB(), data.getSamplesSolr()).forEach(detail_writer::println);
+            set = getMissingInIndex(data.getSamplesDB(), data.getSamplesSolr());
+            set.forEach(detail_writer::println);
+            if (set.size() > threshold) reportOK = false;
             detail_writer.println();
 
             detail_writer.println("Private samples in samples core:");
-            getPresentInIndex(data.getSamplesDB(), data.getSamplesSolr()).forEach(detail_writer::println);
+            set = getPresentInIndex(data.getSamplesDB(), data.getSamplesSolr());
+            set.forEach(detail_writer::println);
+            if (set.size() > threshold) reportOK = false;
             detail_writer.println();
 
             detail_writer.println("Missing groups in merged core:");
-            getMissingInIndex(data.getGroupsDB(), data.getGroupsSolrMerged()).forEach(detail_writer::println);
+            set = getMissingInIndex(data.getGroupsDB(), data.getGroupsSolrMerged());
+            set.forEach(detail_writer::println);
+            if (set.size() > threshold) reportOK = false;
             detail_writer.println();
 
             detail_writer.println("Private groups in merged core:");
-            getPresentInIndex(data.getGroupsDB(), data.getGroupsSolrMerged()).forEach(detail_writer::println);
+            set = getPresentInIndex(data.getGroupsDB(), data.getGroupsSolrMerged());
+            set.forEach(detail_writer::println);
+            if (set.size() > threshold) reportOK = false;
             detail_writer.println();
 
             detail_writer.println("Missing samples in merged core:");
-            getMissingInIndex(data.getSamplesDB(), data.getSamplesSolrMerged()).forEach(detail_writer::println);
+            set = getMissingInIndex(data.getSamplesDB(), data.getSamplesSolrMerged());
+            set.forEach(detail_writer::println);
+            if (set.size() > threshold) reportOK = false;
             detail_writer.println();
 
             detail_writer.println("Private samples in merged core:");
-            getPresentInIndex(data.getSamplesDB(), data.getSamplesSolrMerged()).forEach(detail_writer::println);
+            set = getPresentInIndex(data.getSamplesDB(), data.getSamplesSolrMerged());
+            set.forEach(detail_writer::println);
+            if (set.size() > threshold) reportOK = false;
             detail_writer.println();
 
             // SOLR VS SOLR
             Set<String> groupsMissingMerged = getMissingInIndex(data.getGroupsSolr(), data.getGroupsSolrMerged());
-            if (groupsMissingMerged != null && !groupsMissingMerged.isEmpty())
+            if (groupsMissingMerged != null && !groupsMissingMerged.isEmpty()) {
                 writer.println("Missing groups in solr/merged when comparing to solr/groups: " + myFormat.format(Math.abs(groupsMissingMerged.size())));
+                reportOK = false;
+            }
 
             Set<String> samplesMissingMerged = getMissingInIndex(data.getSamplesSolr(), data.getSamplesSolrMerged());
-            if (samplesMissingMerged != null && !samplesMissingMerged.isEmpty())
+            if (samplesMissingMerged != null && !samplesMissingMerged.isEmpty()) {
                 writer.println("Missing samples in solr/merged when comparing to solr/samples: " + myFormat.format(Math.abs(samplesMissingMerged.size())));
+                reportOK = false;
+            }
             writer.println();
 
             Set<String> groupsPresentMerged = getPresentInIndex(data.getGroupsSolr(), data.getGroupsSolrMerged());
-            if (groupsPresentMerged != null && !groupsPresentMerged.isEmpty())
+            if (groupsPresentMerged != null && !groupsPresentMerged.isEmpty()) {
                 writer.println("Present groups in solr/merged when comparing to solr/groups: " + myFormat.format(Math.abs(groupsPresentMerged.size())));
+                reportOK = false;
+            }
 
             Set<String> samplesPresentMerged = getPresentInIndex(data.getSamplesSolr(), data.getSamplesSolrMerged());
-            if (samplesPresentMerged != null && !samplesPresentMerged.isEmpty())
+            if (samplesPresentMerged != null && !samplesPresentMerged.isEmpty()) {
                 writer.println("Present samples in solr/merged when comparing to solr/samples: " + myFormat.format(Math.abs(samplesPresentMerged.size())));
+                reportOK = false;
+            }
             writer.println();
 
             // DETAIL
             detail_writer.println("Missing groups in solr/merged when comparing to solr/groups");
             groupsMissingMerged.forEach(detail_writer::println);
+            if (groupsMissingMerged.size() > threshold) reportOK = false;
+            detail_writer.println();
 
             detail_writer.println("Missing samples in solr/merged when comparing to solr/samples");
             samplesMissingMerged.forEach(detail_writer::println);
+            if (samplesMissingMerged.size() > threshold) reportOK = false;
+            detail_writer.println();
 
             detail_writer.println("Present groups in solr/merged when comparing to solr/groups");
             groupsPresentMerged.forEach(detail_writer::println);
+            if (groupsPresentMerged.size() > threshold) reportOK = false;
             detail_writer.println();
 
             detail_writer.println("Present samples in solr/merged when comparing to solr/samples");
             samplesPresentMerged.forEach(detail_writer::println);
+            if (samplesPresentMerged.size() > threshold) reportOK = false;
 
             writer.flush();
             detail_writer.flush();

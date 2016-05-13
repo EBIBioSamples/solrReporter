@@ -65,7 +65,7 @@ public class AppStarter implements ApplicationRunner {
             System.exit(1);
         }
 
-        log.info(data.toString());
+        log.debug(data.toString());
 
         Boolean reportOK = report.generateReport(data);
 
