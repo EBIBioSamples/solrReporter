@@ -68,7 +68,7 @@ public class AppStarter implements ApplicationRunner, ExitCodeGenerator {
             exitCode = 1;
         }
 
-        log.info(data.toString());
+        log.debug(data.toString());
 
         Boolean reportOK = report.generateReport(data);
 
