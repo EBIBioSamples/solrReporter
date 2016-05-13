@@ -18,6 +18,9 @@ import java.util.stream.Collectors;
 public class Report {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
+    @Value("${threshold}")
+    private int threshold;
+
     @Value("${filePath}")
     private String path;
 
@@ -25,6 +28,7 @@ public class Report {
     DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
 
     public boolean generateReport(ReportData data) {
+        Boolean reportOK = true;
         Calendar cal = Calendar.getInstance();
 
         File file = new File(path + "report_" + dateFormat.format(cal.getTime()) + ".txt");
@@ -45,10 +49,14 @@ public class Report {
             writer.println("Groups found in Solr merged core: " + myFormat.format(data.getGroupsSolrMergedCount()));
             if (data.getGroupsDBCount() != data.getGroupsSolrCount()) {
                 int dif = data.getGroupsDBCount() - data.getGroupsSolrCount();
+                if (Math.abs(dif) > threshold)
+                    reportOK = false;
                 writer.println("  There's a difference of " + myFormat.format(Math.abs(dif)) + " groups between the DB and solr/groups.");
             }
             if (data.getGroupsDBCount() != data.getGroupsSolrMergedCount()) {
                 int dif = data.getGroupsDBCount() - data.getGroupsSolrMergedCount();
+                if (Math.abs(dif) > threshold)
+                    reportOK = false;
                 writer.println("  There's a difference of " + myFormat.format(Math.abs(dif)) + " groups between the DB and solr/merged.");
             }
             writer.println();
@@ -59,10 +67,14 @@ public class Report {
             writer.println("Samples found in Solr merged core: " + myFormat.format(data.getSamplesSolrMergedCount()));
             if (data.getSamplesDBCount() != data.getSamplesSolrCount()) {
                 int dif = data.getSamplesDBCount() - data.getSamplesSolrCount();
+                if (Math.abs(dif) > threshold)
+                    reportOK = false;
                 writer.println("  There's a difference of " + myFormat.format(Math.abs(dif)) + " samples between the DB and solr/samples.");
             }
             if (data.getSamplesDBCount() != data.getSamplesSolrMergedCount()) {
                 int dif = data.getSamplesDBCount() - data.getSamplesSolrMergedCount();
+                if (Math.abs(dif) > threshold)
+                    reportOK = false;
                 writer.println("  There's a difference of " + myFormat.format(Math.abs(dif)) + " samples between the DB and solr/merged.");
             }
             writer.println();
@@ -144,7 +156,7 @@ public class Report {
             return false;
         }
 
-        return true;
+        return reportOK;
     }
 
     /**
