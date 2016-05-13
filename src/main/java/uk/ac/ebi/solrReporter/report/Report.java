@@ -22,7 +22,7 @@ public class Report {
     private int threshold;
 
     @Value("${filePath:./}")
-    private String path;
+    private File path;
 
     private DecimalFormat myFormat = new DecimalFormat("###,###.###");
     DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
@@ -30,9 +30,13 @@ public class Report {
     public boolean generateReport(ReportData data) {
         Boolean reportOK = true;
         Calendar cal = Calendar.getInstance();
+        
+        if (!path.isDirectory()) {
+        	throw new IllegalArgumentException("filePath must be an existing directory");
+        }
 
-        File file = new File(path + "report_" + dateFormat.format(cal.getTime()) + ".txt");
-        File file_detail = new File(path + "report_detail_" + dateFormat.format(cal.getTime()) + ".txt");
+        File file = new File(path,"report_" + dateFormat.format(cal.getTime()) + ".txt");
+        File file_detail = new File(path,"report_detail_" + dateFormat.format(cal.getTime()) + ".txt");
 
         try {
             PrintWriter writer = new PrintWriter(file);
