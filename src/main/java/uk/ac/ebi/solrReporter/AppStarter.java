@@ -70,7 +70,7 @@ public class AppStarter implements ApplicationRunner {
         Boolean reportOK = report.generateReport(data);
 
 
-        if (reportOK) {
+        if (reportOK && xmlReportOk) {
             log.info("Report generated successfully!");
         } else {
             log.error("Failed to generate report!");
