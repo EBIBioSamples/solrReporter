@@ -8,6 +8,9 @@ filePath=user/home/
 restTemplate.maxConnections=128
 restTemplate.maxRoutes=64
 
+# Threshold for report validation
+threshold=100
+
 # ORACLE
 oracle.username=user
 oracle.password=pass

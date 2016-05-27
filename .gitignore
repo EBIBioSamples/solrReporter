@@ -38,5 +38,5 @@ application.properties
 hibernate.properties
 report_*
 xml_*.txt
-debug.sh
 run.sh
+debug.sh

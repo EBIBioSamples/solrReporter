@@ -1,5 +1,6 @@
 package uk.ac.ebi.solrReporter.sources;
 
+import oracle.jdbc.pool.OracleDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,9 +18,16 @@ public class DBSource implements Source {
 
     private JdbcTemplate jdbcTemplate;
 
+    private String sourceURL;
+
     @Autowired
-    public void setDataSource(DataSource dataSource) {
+    public void setDataSource(OracleDataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
+        try {
+            sourceURL = dataSource.getURL();
+        } catch (SQLException e) {
+            log.error("Error getting DB URL.", e);
+        }
     }
 
     @Override
@@ -67,6 +76,10 @@ public class DBSource implements Source {
 
         log.info("Successfully fetched " + accessions.size() + " groups accessions from DB.");
         return accessions;
+    }
+
+    public String getSourceUrl() {
+        return sourceURL;
     }
 
 }

@@ -32,7 +32,7 @@ public class OracleConfiguration {
     }
 
     @Bean
-    DataSource dataSource() throws SQLException {
+    OracleDataSource dataSource() throws SQLException {
         OracleDataSource dataSource = new OracleDataSource();
         dataSource.setUser(username);
         dataSource.setPassword(password);

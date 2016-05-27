@@ -11,6 +11,10 @@ import java.util.Set;
 public class ReportData {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
+    private String DBSource;
+
+    private String SolrSource;
+
     private int samplesDBCount;
 
     private int groupsDBCount;
@@ -36,6 +40,15 @@ public class ReportData {
     private Set<String> groupsSolrMerged;
 
     /* Getters and Setters */
+
+    public String getDBSource() {
+        return DBSource;
+    }
+
+    public String getSolrSource() {
+        return SolrSource;
+    }
+
     public int getSamplesDBCount() {
         return samplesDBCount;
     }
@@ -62,6 +75,14 @@ public class ReportData {
 
     public Set<String> getSamplesDB() {
         return samplesDB;
+    }
+
+    public void setDBSource(String DBSource) {
+        this.DBSource = DBSource;
+    }
+
+    public void setSolrSource(String solrSource) {
+        SolrSource = solrSource;
     }
 
     public void setSamplesDB(Set<String> samplesDB) {
@@ -118,12 +139,14 @@ public class ReportData {
     public String toString() {
         DecimalFormat myFormat = new DecimalFormat("###,###.###");
         return "Report{" +
-                "samplesDB=" + myFormat.format(getSamplesDBCount()) +
-                ", groupsDB=" + myFormat.format(getGroupsDBCount()) +
-                ", samplesSolr=" + myFormat.format(getSamplesSolrCount()) +
-                ", groupsSolr=" + myFormat.format(getGroupsSolrCount()) +
-                ", samplesSolrMerged=" + myFormat.format(getSamplesSolrMergedCount()) +
-                ", groupsSolrMerged=" + myFormat.format(getGroupsSolrMergedCount()) +
+                "DBSource= " + getDBSource() +
+                ", SolrSource= " + getSolrSource() +
+                ", samplesDB= " + myFormat.format(getSamplesDBCount()) +
+                ", groupsDB= " + myFormat.format(getGroupsDBCount()) +
+                ", samplesSolr= " + myFormat.format(getSamplesSolrCount()) +
+                ", groupsSolr= " + myFormat.format(getGroupsSolrCount()) +
+                ", samplesSolrMerged= " + myFormat.format(getSamplesSolrMergedCount()) +
+                ", groupsSolrMerged= " + myFormat.format(getGroupsSolrMergedCount()) +
                 '}';
     }
 }

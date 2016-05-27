@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 import static java.lang.Math.toIntExact;
@@ -41,6 +40,18 @@ public class SolrSource implements Source {
 
     public void setMerged(String merged) {
         this.merged = merged;
+    }
+
+    public String getGroups() {
+        return groups;
+    }
+
+    public String getSamples() {
+        return samples;
+    }
+
+    public String getMerged() {
+        return merged;
     }
 
     @Override

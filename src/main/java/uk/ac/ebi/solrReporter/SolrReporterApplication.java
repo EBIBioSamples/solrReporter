@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class SolrReporterApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(SolrReporterApplication.class, args);
+		//have to call system.exit to have spring generated exit code propagate correctly
+		System.exit(SpringApplication.exit(SpringApplication.run(SolrReporterApplication.class, args)));
 	}
 }
