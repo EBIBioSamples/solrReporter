@@ -4,6 +4,10 @@ threadPoolCount=4
 # File destination
 filePath=user/home/
 
+# REST TEMPLATE
+restTemplate.maxConnections=128
+restTemplate.maxRoutes=64
+
 # ORACLE
 oracle.username=user
 oracle.password=pass

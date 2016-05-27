@@ -1,5 +1,7 @@
 package uk.ac.ebi.solrReporter.report.xml;
 
+import org.springframework.stereotype.Component;
+
 /**
  * Created by lucacherubin on 2016/05/09.
  */
