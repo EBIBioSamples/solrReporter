@@ -60,8 +60,8 @@ public class AppStarter implements ApplicationRunner, ExitCodeGenerator {
             data.setSamplesSolr(sourceFactory.getSolrSource().getSamplesAccessions());
             data.setSamplesSolrMerged(sourceFactory.getSolrSource().getSamplesFromMergedCore());
 
-            for (int i = 0; i < futures.size(); i++) {
-                futures.get(i).get();
+            for (Future<?> future : futures) {
+                future.get();
             }
 
             threadPool.shutdown();

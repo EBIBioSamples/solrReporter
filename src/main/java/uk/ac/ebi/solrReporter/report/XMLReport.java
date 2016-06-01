@@ -19,10 +19,7 @@ import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -56,10 +53,13 @@ public class XMLReport {
     @Value("${filePath}")
     private String path;
 
+    @Value("${testPerformance}")
+    private boolean testPerformance = false;
+
     private ExecutorService threadPool = null;
     public boolean generateReport(ReportData data) {
 
-//        final int checkNumber = threadPoolCount * 125; // maintain constant the ratio between number of checked samples and threads
+        final int checkNumber = threadPoolCount * 125; // maintain constant the ratio between number of checked samples and threads
         boolean reportStatus = false;
 
         Calendar cal = Calendar.getInstance();
@@ -96,12 +96,15 @@ public class XMLReport {
 
             Set<String> differentGroup = new HashSet<>();
 
+            List<SingleCheck> allGroupsChecks;
 
-
-//            List<SingleCheck> allGroupsChecks= groupAccessions.stream().limit(checkNumber).map(acc -> new SingleCheck(acc,
-//                    threadPool.submit(context.getBean(GroupXmlMatch.class, acc)))).collect(Collectors.toList());
-            List<SingleCheck> allGroupsChecks= groupAccessions.stream().map(acc -> new SingleCheck(acc,
-                    threadPool.submit(context.getBean(GroupXmlMatch.class, acc)))).collect(Collectors.toList());
+            if (testPerformance) {
+                allGroupsChecks = groupAccessions.stream().limit(checkNumber).map(acc -> new SingleCheck(acc,
+                        threadPool.submit(context.getBean(GroupXmlMatch.class, acc)))).collect(Collectors.toList());
+            } else {
+                allGroupsChecks = groupAccessions.stream().map(acc -> new SingleCheck(acc,
+                        threadPool.submit(context.getBean(GroupXmlMatch.class, acc)))).collect(Collectors.toList());
+            }
 
             for (SingleCheck groupCheck: allGroupsChecks) {
                 try {
@@ -133,11 +136,15 @@ public class XMLReport {
             }
 
             Set<String> differentSample = new HashSet<>();
+            List<SingleCheck> allSamplesChecks;
 
-//            List<SingleCheck> allSamplesChecks = sampleAccessions.stream().limit(checkNumber).map(acc -> new SingleCheck(acc,
-//                    threadPool.submit(context.getBean(SampleXmlMatch.class, acc)))).collect(Collectors.toList());
-            List<SingleCheck> allSamplesChecks = sampleAccessions.stream().map(acc -> new SingleCheck(acc,
-                    threadPool.submit(context.getBean(SampleXmlMatch.class, acc)))).collect(Collectors.toList());
+            if (testPerformance) {
+                allSamplesChecks = sampleAccessions.stream().limit(checkNumber).map(acc -> new SingleCheck(acc,
+                        threadPool.submit(context.getBean(SampleXmlMatch.class, acc)))).collect(Collectors.toList());
+            } else {
+                allSamplesChecks = sampleAccessions.stream().map(acc -> new SingleCheck(acc,
+                        threadPool.submit(context.getBean(SampleXmlMatch.class, acc)))).collect(Collectors.toList());
+            }
 
             for (SingleCheck sampleCheck: allSamplesChecks) {
                 try {

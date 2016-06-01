@@ -30,3 +30,6 @@ mail.smtpStarttlsEnable=false
 mail.from=me@localhost
 mail.username=
 mail.password=
+
+# OTHER
+testPerformance=false
