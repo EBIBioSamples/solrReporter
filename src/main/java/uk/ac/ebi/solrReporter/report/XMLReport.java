@@ -15,6 +15,7 @@ import uk.ac.ebi.solrReporter.sources.SolrSource;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -31,7 +32,7 @@ import java.util.stream.Collectors;
  * Created by lucacherubin on 2016/05/09.
  */
 @Component
-public class XMLReport {
+public class XMLReport implements Report{
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -57,37 +58,26 @@ public class XMLReport {
     private boolean testPerformance = false;
 
     private ExecutorService threadPool = null;
-    public boolean generateReport(ReportData data) {
+    public boolean generateReport(ReportData data, File summary, File details) {
 
         final int checkNumber = threadPoolCount * 125; // maintain constant the ratio between number of checked samples and threads
         boolean reportStatus = false;
 
-        Calendar cal = Calendar.getInstance();
-        String currentDate = dateFormat.format(cal.getTime());
-
-        File fileSummary = new File(path + "xml_report_" + dateFormat.format(cal.getTime()) + ".txt");
-        File fileDetails = new File(path + "xml_report_detail_" + dateFormat.format(cal.getTime()) + ".txt");
-        File fileParseErrors = new File(path + "xml_parse_exception_" + dateFormat.format(cal.getTime()) + ".txt" );
-        File fileAllErrors = new File(path + "xml_all_exceptions_" + dateFormat.format(cal.getTime()) + ".txt");
 
         threadPool = Executors.newFixedThreadPool(threadPoolCount);
-        PrintWriter summary_writer = null;
-        PrintWriter detail_writer = null;
-        PrintWriter parse_exception_writer = null;
-        PrintWriter all_exceptions_writer = null;
 
         long startTime = System.nanoTime();
 
+        PrintWriter summaryWriter = null;
+        PrintWriter detailWriter = null;
 
         try  {
 
-            summary_writer = new PrintWriter(fileSummary);
-            detail_writer = new PrintWriter(fileDetails);
-            parse_exception_writer = new PrintWriter(fileParseErrors);
-            all_exceptions_writer = new PrintWriter(fileAllErrors);
+            summaryWriter = new PrintWriter(getAppender(summary));
+            detailWriter = new PrintWriter(getAppender(details));
 
-            summary_writer.println("\n-- XML API Summary --\n");
-            detail_writer.println("-- XML API Details --\n");
+            summaryWriter.println("\n-- XML API Summary --\n");
+            detailWriter.println("\n-- XML API Details --\n");
 
             // Temporary solution
             Set<String> groupAccessions = data.getGroupsDB();
@@ -116,9 +106,10 @@ public class XMLReport {
                     log.error(String.format("Tasked interrupted for %s: ", groupCheck.getAccession()));
                 } catch (ExecutionException e) {
                     log.error(String.format("Error while retrieving group %s XML: ",groupCheck.getAccession()));
-                    all_exceptions_writer.println(String.format("Exception for %s: %s", groupCheck.getAccession(), e.getMessage()));
                     if (e.getCause().getClass() == JDOMParseException.class) {
-                        parse_exception_writer.println(String.format("Parse error for %s: %s", groupCheck.getAccession(),e.getMessage()));
+                        detailWriter.println(String.format("Parse error for %s: %s", groupCheck.getAccession(),e.getMessage()));
+                    } else {
+                        detailWriter.println(String.format("Exception for %s: %s", groupCheck.getAccession(), e.getMessage()));
                     }
                 } catch (Exception e) {
                     log.error(String.format("Unexpected exception for group %s ", groupCheck.getAccession()),e );
@@ -126,13 +117,13 @@ public class XMLReport {
 
             }
 
-            summary_writer.println(String.format("Number of group compared:\t%d",allGroupsChecks.size()));
-            summary_writer.println(String.format("Non matching groups:\t%d",differentGroup.size()));
+            summaryWriter.println(String.format("Number of group compared:\t%d",allGroupsChecks.size()));
+            summaryWriter.println(String.format("Non matching groups:\t%d",differentGroup.size()));
             if (!differentGroup.isEmpty()) {
-                detail_writer.println("Group Accessions not matching legacy version:");
-                differentGroup.forEach(detail_writer::println);
+                detailWriter.println("Group Accessions not matching legacy version:");
+                differentGroup.forEach(detailWriter::println);
             } else {
-                detail_writer.println("All groups match their legacy versions");
+                detailWriter.println("All groups match their legacy versions");
             }
 
             Set<String> differentSample = new HashSet<>();
@@ -156,9 +147,10 @@ public class XMLReport {
                     log.error(String.format("Tasked interrupted for %s: ", sampleCheck.getAccession()));
                 } catch (ExecutionException e) {
                     log.error(String.format("Error while retrieving sample %s XML: ",sampleCheck.getAccession()));
-                    all_exceptions_writer.println(String.format("Exception for %s: %s", sampleCheck.getAccession(), e.getMessage()));
                     if (e.getCause().getClass() == JDOMParseException.class) {
-                        parse_exception_writer.println(String.format("Parse error for %s: %s", sampleCheck.getAccession(),e.getMessage()));
+                        detailWriter.println(String.format("Parse error for %s: %s", sampleCheck.getAccession(),e.getMessage()));
+                    } else {
+                        detailWriter.println(String.format("Exception for %s: %s", sampleCheck.getAccession(), e.getMessage()));
                     }
                 } catch (Exception e) {
                     log.error(String.format("Unexpected exception for sample %s ",sampleCheck.getAccession()),e );
@@ -166,27 +158,25 @@ public class XMLReport {
 
             }
 
-            summary_writer.println(String.format("Number of samples compared:\t%d",allSamplesChecks.size()));
-            summary_writer.println(String.format("Non matching samples:\t%d",differentSample.size()));
+            summaryWriter.println(String.format("Number of samples compared:\t%d",allSamplesChecks.size()));
+            summaryWriter.println(String.format("Non matching samples:\t%d",differentSample.size()));
             if (!differentSample.isEmpty()) {
-                detail_writer.println("Samples Accessions not matching legacy version:");
-                differentSample.forEach(detail_writer::println);
+                detailWriter.println("Samples Accessions not matching legacy version:");
+                differentSample.forEach(detailWriter::println);
             } else {
-                detail_writer.println("All samples match their legacy version");
+                detailWriter.println("All samples match their legacy version");
             }
 
             reportStatus = true;
 
         long endTime = System.nanoTime();
-        summary_writer.println(String.format("\n\n\nXML report duration: %dms",(endTime - startTime)/1000000));
+        summaryWriter.println(String.format("\n\n\nXML report duration: %dms",(endTime - startTime)/1000000));
 
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             log.error("Error while creating report", e.getMessage());
         } finally {
-            if (summary_writer != null) { summary_writer.flush(); summary_writer.close(); }
-            if (detail_writer != null) { detail_writer.flush(); detail_writer.close(); }
-            if (parse_exception_writer != null) { parse_exception_writer.flush(); parse_exception_writer.close(); }
-            if (all_exceptions_writer != null) { all_exceptions_writer.flush(); all_exceptions_writer.close(); }
+            if (summaryWriter != null) { summaryWriter.flush(); summaryWriter.close(); }
+            if (detailWriter != null) { detailWriter.flush(); detailWriter.close(); }
 
             try {
                 threadPool.shutdown();

@@ -1,41 +1,50 @@
 package uk.ac.ebi.solrReporter;
 
-        import org.slf4j.Logger;
-        import org.slf4j.LoggerFactory;
-        import org.springframework.beans.factory.annotation.Autowired;
-        import org.springframework.beans.factory.annotation.Value;
-        import org.springframework.boot.ApplicationArguments;
-        import org.springframework.boot.ApplicationRunner;
-        import org.springframework.boot.ExitCodeGenerator;
-        import org.springframework.stereotype.Component;
-        import uk.ac.ebi.solrReporter.report.Report;
-        import uk.ac.ebi.solrReporter.report.ReportData;
-        import uk.ac.ebi.solrReporter.report.XMLReport;
-        import uk.ac.ebi.solrReporter.sources.SourceFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.ExitCodeGenerator;
+import org.springframework.stereotype.Component;
+import uk.ac.ebi.solrReporter.report.Report;
+import uk.ac.ebi.solrReporter.report.SolrReport;
+import uk.ac.ebi.solrReporter.report.ReportData;
+import uk.ac.ebi.solrReporter.report.XMLReport;
+import uk.ac.ebi.solrReporter.sources.SourceFactory;
 
-        import java.util.ArrayList;
-        import java.util.List;
-        import java.util.Set;
-        import java.util.concurrent.*;
+import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.concurrent.*;
 
 @Component
 public class AppStarter implements ApplicationRunner, ExitCodeGenerator {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
-    private XMLReport xmlReport;
+    private final DateFormat filenameDateFormat = new SimpleDateFormat("yyyyMMdd");
 
     @Autowired
     private SourceFactory sourceFactory;
 
     @Autowired
-    private Report report;
+    private Report solrReport;
+
+    @Autowired
+    private Report xmlReport;
 
     private ExecutorService threadPool = null;
     private List<Future<?>> futures = new ArrayList<>();
 
     @Value("${threadPoolCount:4}")
     private int threadPoolCount;
+
+    @Value("${filePath:./}")
+    private File path;
 
     private int exitCode = 0;
 
@@ -74,11 +83,14 @@ public class AppStarter implements ApplicationRunner, ExitCodeGenerator {
 
         log.debug(data.toString());
 
-        Boolean xmlReportOk = xmlReport.generateReport(data);
-        Boolean reportOK = report.generateReport(data);
+        File summary = getSummaryFile(path);
+        File details = getDetailsFile(path);
 
+        List<Boolean> allReportResults = new ArrayList<>();
+        allReportResults.add(solrReport.generateReport(data, summary, details));
+        allReportResults.add(xmlReport.generateReport(data, summary, details));
 
-        if (reportOK && xmlReportOk) {
+        if (allReportResults.stream().allMatch(value -> value.equals(Boolean.TRUE))) {
             log.info("Report generated with no errors.");
         } else {
             log.error("There are errors in the report.");
@@ -90,5 +102,28 @@ public class AppStarter implements ApplicationRunner, ExitCodeGenerator {
     public int getExitCode() {
         return exitCode;
     }
+
+
+    private File getSummaryFile(File path) {
+        Calendar cal = Calendar.getInstance();
+
+        if (!path.isDirectory()) {
+        	throw new IllegalArgumentException("filePath must be an existing directory");
+        }
+
+        return new File(path,"report_" + filenameDateFormat.format(cal.getTime()) + ".txt");
+    }
+
+    private File getDetailsFile(File path) {
+        Calendar cal = Calendar.getInstance();
+
+        if (!path.isDirectory()) {
+            throw new IllegalArgumentException("filePath must be an existing directory");
+        }
+
+        return new File(path,"report_detail_" + filenameDateFormat.format(cal.getTime()) + ".txt");
+
+    }
+
 }
 
