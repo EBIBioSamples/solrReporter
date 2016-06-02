@@ -26,16 +26,16 @@ import java.util.concurrent.*;
 public class AppStarter implements ApplicationRunner, ExitCodeGenerator {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private final DateFormat filenameDateFormat = new SimpleDateFormat("yyyyMMdd");
+    private final DateFormat filenameDateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
 
     @Autowired
     private SourceFactory sourceFactory;
 
     @Autowired
-    private Report solrReport;
+    private SolrReport solrReport;
 
     @Autowired
-    private Report xmlReport;
+    private XMLReport xmlReport;
 
     private ExecutorService threadPool = null;
     private List<Future<?>> futures = new ArrayList<>();

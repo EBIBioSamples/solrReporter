@@ -37,13 +37,6 @@ public class XMLReport implements Report{
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     private DecimalFormat myFormat = new DecimalFormat("###,###.###");
-    DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-
-    @Autowired
-    private SolrSource solrSource;
-
-    @Autowired
-    private XmlApiService xmlApiService;
 
     @Autowired
     private ApplicationContext context;
@@ -51,18 +44,14 @@ public class XMLReport implements Report{
     @Value("${threadPoolCount}")
     private int threadPoolCount;
 
-    @Value("${filePath}")
-    private String path;
-
-    @Value("${testPerformance}")
-    private boolean testPerformance = false;
+    @Value("${reporter.xml.testPerformance:true}")
+    private boolean testPerformance;
 
     private ExecutorService threadPool = null;
     public boolean generateReport(ReportData data, File summary, File details) {
 
         final int checkNumber = threadPoolCount * 125; // maintain constant the ratio between number of checked samples and threads
         boolean reportStatus = false;
-
 
         threadPool = Executors.newFixedThreadPool(threadPoolCount);
 
