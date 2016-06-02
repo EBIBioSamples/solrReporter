@@ -1,25 +1,29 @@
 package uk.ac.ebi.solrReporter;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.boot.ExitCodeGenerator;
-import org.springframework.stereotype.Component;
-import uk.ac.ebi.solrReporter.report.Report;
-import uk.ac.ebi.solrReporter.report.ReportData;
-import uk.ac.ebi.solrReporter.sources.SourceFactory;
+        import org.slf4j.Logger;
+        import org.slf4j.LoggerFactory;
+        import org.springframework.beans.factory.annotation.Autowired;
+        import org.springframework.beans.factory.annotation.Value;
+        import org.springframework.boot.ApplicationArguments;
+        import org.springframework.boot.ApplicationRunner;
+        import org.springframework.boot.ExitCodeGenerator;
+        import org.springframework.stereotype.Component;
+        import uk.ac.ebi.solrReporter.report.Report;
+        import uk.ac.ebi.solrReporter.report.ReportData;
+        import uk.ac.ebi.solrReporter.report.XMLReport;
+        import uk.ac.ebi.solrReporter.sources.SourceFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.*;
+        import java.util.ArrayList;
+        import java.util.List;
+        import java.util.Set;
+        import java.util.concurrent.*;
 
 @Component
 public class AppStarter implements ApplicationRunner, ExitCodeGenerator {
     private Logger log = LoggerFactory.getLogger(this.getClass());
+
+    @Autowired
+    private XMLReport xmlReport;
 
     @Autowired
     private SourceFactory sourceFactory;
@@ -32,7 +36,7 @@ public class AppStarter implements ApplicationRunner, ExitCodeGenerator {
 
     @Value("${threadPoolCount:4}")
     private int threadPoolCount;
-    
+
     private int exitCode = 0;
 
     @Override
@@ -56,8 +60,8 @@ public class AppStarter implements ApplicationRunner, ExitCodeGenerator {
             data.setSamplesSolr(sourceFactory.getSolrSource().getSamplesAccessions());
             data.setSamplesSolrMerged(sourceFactory.getSolrSource().getSamplesFromMergedCore());
 
-            for (int i = 0; i < futures.size(); i++) {
-                futures.get(i).get();
+            for (Future<?> future : futures) {
+                future.get();
             }
 
             threadPool.shutdown();
@@ -71,9 +75,11 @@ public class AppStarter implements ApplicationRunner, ExitCodeGenerator {
 
         log.debug(data.toString());
 
+        Boolean xmlReportOk = xmlReport.generateReport(data);
         Boolean reportOK = report.generateReport(data);
 
-        if (reportOK) {
+
+        if (reportOK && xmlReportOk) {
             log.info("Report generated with no errors.");
         } else {
             log.error("There are errors in the report.");
@@ -82,8 +88,9 @@ public class AppStarter implements ApplicationRunner, ExitCodeGenerator {
         }
     }
 
-	@Override
-	public int getExitCode() {
-		return exitCode;
-	}
+    @Override
+    public int getExitCode() {
+        return exitCode;
+    }
 }
+

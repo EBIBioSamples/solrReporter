@@ -1,11 +1,15 @@
 # Thread Config
 threadPoolCount=4
 
-# Threshold for report validation
-threshold=100
-
 # File destination
 filePath=user/home/
+
+# REST TEMPLATE
+restTemplate.maxConnections=128
+restTemplate.maxRoutes=64
+
+# Threshold for report validation
+threshold=100
 
 # ORACLE
 oracle.username=user
@@ -26,3 +30,6 @@ mail.smtpStarttlsEnable=false
 mail.from=me@localhost
 mail.username=
 mail.password=
+
+# OTHER
+testPerformance=false
