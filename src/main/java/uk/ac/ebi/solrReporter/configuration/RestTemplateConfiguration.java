@@ -16,16 +16,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
-/**
- * Created by lucacherubin on 2016/05/25.
- */
 @Configuration
 public class RestTemplateConfiguration {
 
-    @Value("${restTemplate.maxConnections}")
+    @Value("${restTemplate.maxConnections:32}")
     private int maxConnections;
 
-    @Value("${restTemplate.maxRoutes}")
+    @Value("${restTemplate.maxRoutes:32}")
     private int maxRoutes;
 
     @Bean
