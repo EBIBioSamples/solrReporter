@@ -79,6 +79,7 @@ public class SolrSource implements Source {
     public Set<String> getGroupsAccessions() {
         log.info("Getting groups accessions indexed to groups core.");
         HttpSolrClient groupsClient = new HttpSolrClient(groups);
+        
 
         ModifiableSolrParams solrParams = new ModifiableSolrParams();
         solrParams.set("q", "*:*");

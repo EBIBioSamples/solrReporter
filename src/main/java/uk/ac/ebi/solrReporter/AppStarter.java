@@ -37,7 +37,7 @@ public class AppStarter implements ApplicationRunner, ExitCodeGenerator {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        log.info("Starting Report");
+        log.info("Starting solrReporter");
 
         threadPool = Executors.newFixedThreadPool(threadPoolCount);
         ReportData data = new ReportData();
@@ -66,6 +66,7 @@ public class AppStarter implements ApplicationRunner, ExitCodeGenerator {
         } catch (InterruptedException | ExecutionException e) {
             log.error("Error collecting report data.", e);
             exitCode = 1;
+            return;
         }
 
         log.debug(data.toString());
@@ -77,6 +78,7 @@ public class AppStarter implements ApplicationRunner, ExitCodeGenerator {
         } else {
             log.error("There are errors in the report.");
             exitCode = 1;
+            return;
         }
     }
 

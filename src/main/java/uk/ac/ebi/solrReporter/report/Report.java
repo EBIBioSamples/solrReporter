@@ -37,6 +37,9 @@ public class Report {
 
         File file = new File(path,"report_" + dateFormat.format(cal.getTime()) + ".txt");
         File file_detail = new File(path,"report_detail_" + dateFormat.format(cal.getTime()) + ".txt");
+        
+        log.info("Writing to "+file);
+        log.info("Writing to "+file_detail);
 
         try {
             PrintWriter writer = new PrintWriter(file);
