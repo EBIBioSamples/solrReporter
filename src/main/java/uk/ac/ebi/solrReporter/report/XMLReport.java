@@ -47,14 +47,14 @@ public class XMLReport {
     @Autowired
     private ApplicationContext context;
 
-    @Value("${threadPoolCount}")
+    @Value("${threadPoolCount:4}")
     private int threadPoolCount;
 
-    @Value("${filePath}")
+    @Value("${filePath:./}")
     private String path;
 
-    @Value("${testPerformance}")
-    private boolean testPerformance = false;
+    @Value("${testPerformance:false}")
+    private boolean testPerformance;
 
     private ExecutorService threadPool = null;
     public boolean generateReport(ReportData data) {
